@@ -1,0 +1,115 @@
+﻿using System;
+using System.Collections.Generic;
+using CrowdControl.Common;
+using ConnectorType = CrowdControl.Common.ConnectorType;
+
+namespace CrowdControl.Games.Packs.ContentWarning
+{
+
+    public class ContentWarning : SimpleTCPPack
+    {
+        public override string Host => "127.0.0.1";
+
+        public override ushort Port => 51337;
+
+        public override ISimpleTCPPack.MessageFormat MessageFormat => ISimpleTCPPack.MessageFormat.CrowdControlLegacy;
+
+        public ContentWarning(UserRecord player, Func<CrowdControlBlock, bool> responseHandler, Action<object> statusUpdateHandler) : base(player, responseHandler, statusUpdateHandler) { }
+
+        public override Game Game { get; } = new("Content Warning", "ContentWarning", "PC", ConnectorType.SimpleTCPServerConnector);
+
+        public override EffectList Effects => new List<Effect>
+        {
+                new Effect("Damage Player 10%", "damage") { Category = "Health"},
+                new Effect("Damage Player 30%", "damageb") { Category = "Health"},
+                new Effect("Kill Player", "kill") { Category = "Health"},
+                new Effect("Heal Player 10%", "heal") { Category = "Health"},
+                new Effect("Heal Player 30%", "healb") { Category = "Health"},
+                new Effect("Full Heal Player", "healf") { Category = "Health"},
+
+                new Effect("Restore Oxygen 10%", "giveo210") { Category = "Oxygen"},
+                new Effect("Restore Oxygen 30%", "giveo230") { Category = "Oxygen"},
+                new Effect("Restore Oxygen Full", "giveo2100") { Category = "Oxygen"},
+                new Effect("Drain Oxygen 10%", "takeo210") { Category = "Oxygen"},
+                new Effect("Drain Oxygen 30%", "takeo230") { Category = "Oxygen"},
+                //new Effect("Drain Oxygen Full", "takeo2100") { Category = "Oxygen"},
+
+                new Effect("Fill Stamina", "fillstam") { Category = "Stamina"},
+                new Effect("Empty Stamina", "emptystam") { Category = "Stamina"},
+
+
+                new Effect("Make Sound", "sound"),
+
+                new Effect("Launch Player", "launch") { Category = "Movement"},
+                new Effect("Mega Launch Player", "megalaunch") { Category = "Movement"},
+                new Effect("Shove Player Forward", "forward") { Category = "Movement"},
+                new Effect("Yank Player Backward", "backward") { Category = "Movement"},
+                new Effect("Ragdoll Player", "ragdoll") { Category = "Movement"},
+
+                new Effect("Ultra Slow Player", "ultraslow") { Category = "Movement", Duration = 30},
+                new Effect("Slow Player", "slow") { Category = "Movement", Duration = 30},
+                new Effect("Fast Player", "fast") { Category = "Movement", Duration = 30},
+                new Effect("Ultra Fast Player", "ultrafast") { Category = "Movement", Duration = 30},
+
+                new Effect("Low Jump", "lowjump") { Category = "Jumping", Duration = 30},
+                new Effect("High Jump", "highjump") { Category = "Jumping", Duration = 30},
+                new Effect("Ultra Jump", "ultrajump") { Category = "Jumping", Duration = 30},
+                new Effect("Trigger Jump", "jump") { Category = "Jumping"},
+
+                new Effect("Give Boom Mic", "giveitem_0") { Category = "Items"},
+                new Effect("Give Camera", "giveitem_1") { Category = "Items"},
+                new Effect("Give Clapper", "giveitem_3") { Category = "Items"},
+                new Effect("Give Defibrilator", "giveitem_4") { Category = "Items"},
+                new Effect("Give Flare", "giveitem_7") { Category = "Items"},
+                new Effect("Give Gooball", "giveitem_8") { Category = "Items"},
+                new Effect("Give Hugger", "giveitem_9") { Category = "Items"},
+                new Effect("Give Long Flashlight", "giveitem_11") { Category = "Items"},
+                new Effect("Give Party Popper", "giveitem_16") { Category = "Items"},
+                new Effect("Give Shockstick", "giveitem_18") { Category = "Items"},
+                new Effect("Give Sound Player", "giveitem_19") { Category = "Items"},
+                new Effect("Give Chorby", "giveitem_28") { Category = "Items"},
+                new Effect("Give Brain on a Stick", "giveitem_27") { Category = "Items"},
+                new Effect("Give Radio", "giveitem_31") { Category = "Items"},
+                new Effect("Give Spine", "giveitem_34") { Category = "Items"},
+
+                new Effect("Drop Item", "dropitem") { Category = "Items"},
+                new Effect("Take Item", "takeitem") { Category = "Items"},
+
+                new Effect("Spawn Jello", "spawn_Jello") { Category = "Monsters"},
+                new Effect("Spawn Zombie", "spawn_Zombe") { Category = "Monsters"},
+                new Effect("Spawn Spider", "spawn_Spider") { Category = "Monsters"},
+                new Effect("Spawn Snatcho", "spawn_Snatcho") { Category = "Monsters"},
+                new Effect("Spawn Bombs", "spawn_Bombs") { Category = "Monsters"},
+                new Effect("Spawn Barnacle Ball", "spawn_BarnacleBall") { Category = "Monsters"},
+                new Effect("Spawn Dog", "spawn_Dog") { Category = "Monsters"},
+                new Effect("Spawn Ear", "spawn_Ear") { Category = "Monsters"},
+                new Effect("Spawn Big Slap", "spawn_BigSlap") { Category = "Monsters"},
+                new Effect("Spawn Eye Guy", "spawn_EyeGuy") { Category = "Monsters"},
+                new Effect("Spawn Flicker", "spawn_Flicker") { Category = "Monsters"},
+                new Effect("Spawn Harpoon", "spawn_Harpoon") { Category = "Monsters"},
+                new Effect("Spawn Mouthe", "spawn_Mouthe") { Category = "Monsters"},
+                new Effect("Spawn Whisk", "spawn_Whisk") { Category = "Monsters"},
+                new Effect("Spawn Weeping", "spawn_Weeping") { Category = "Monsters"},
+
+                new Effect("Shake Screen", "shake") { Category = "Camera", Duration = 30},
+                new Effect("Shake Screen - Long", "shakebig") { Category = "Camera", Duration = 30},
+                new Effect("Wide Camera", "widecam") { Category = "Camera", Duration = 30},
+                new Effect("Narrow Camera", "narrowcam") { Category = "Camera", Duration = 30},
+                //new Effect("Invert Camera", "flipcam") { Category = "Camera", Duration = 30},
+
+                new Effect("Give $10", "money_10") { Category = "Money"},
+                new Effect("Give $100", "money_100") { Category = "Money"},
+                new Effect("Give $1000", "money_1000") { Category = "Money"},
+                new Effect("Take $10", "money_-10") { Category = "Money"},
+                new Effect("Take $100", "money_-100") { Category = "Money"},
+                new Effect("Take $1000", "money_-1000") { Category = "Money"},
+
+                new Effect("Give 10% View Quota", "views_10") { Category = "Views"},
+                new Effect("Give 30% View Quota", "views_30") { Category = "Views"},
+                new Effect("Give 100% View Quota", "views_100") { Category = "Views"},
+                new Effect("Take 10% View Quota", "views_-10") { Category = "Views"},
+                new Effect("Take 30% View Quota", "views_-30") { Category = "Views"},
+                new Effect("Take 100% View Quota", "views_-100") { Category = "Views"},
+        };
+    }
+}
