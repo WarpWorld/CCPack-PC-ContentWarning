@@ -13,12 +13,17 @@ namespace BepinControl
         PLAYER_SLOW,
         PLAYER_FAST,
         PLAYER_ULTRA_FAST,
+        PLAYER_FREEZE,
         JUMP_LOW,
         JUMP_HIGH,
         JUMP_ULTRA,
         WIDE_CAMERA,
         NARROW_CAMERA,
         FLIP_CAMERA,
+        INF_STAM,
+        NO_STAM,
+        INVUL,
+        OHKO
     }
     public class Timed
     {
@@ -77,6 +82,14 @@ namespace BepinControl
         {
             switch (type)
             {
+                case TimedType.OHKO:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            CrowdDelegates.callFunc(Player.localPlayer, "Heal", new object[] { Player.PlayerData.maxHealth });
+                        });
+                        break;
+                    }
                 case TimedType.FLIP_CAMERA:
                     {
                         TestMod.ActionQueue.Enqueue(() =>
@@ -101,6 +114,7 @@ namespace BepinControl
                 case TimedType.PLAYER_SLOW:
                 case TimedType.PLAYER_FAST:
                 case TimedType.PLAYER_ULTRA_FAST:
+                case TimedType.PLAYER_FREEZE:
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
@@ -128,6 +142,43 @@ namespace BepinControl
 
             switch (type)
             {
+                case TimedType.INVUL:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            if (Player.localPlayer.data.health < Player.PlayerData.maxHealth)
+                                CrowdDelegates.callFunc(Player.localPlayer, "Heal", new object[] { Player.PlayerData.maxHealth });
+                        });
+                        break;
+                    }
+                case TimedType.OHKO:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            if (Player.localPlayer.data.health > 1.0f)
+                            {
+                                UnityEngine.Vector3 force = new UnityEngine.Vector3(0, 0, 0);
+                                CrowdDelegates.callFunc(Player.localPlayer, "CallTakeDamageAndAddForceAndFall", new object[] { Player.localPlayer.data.health - 1.0f, force, 0 });
+                            }
+                        });
+                        break;
+                    }
+                case TimedType.INF_STAM:
+                { 
+                    TestMod.ActionQueue.Enqueue(() =>
+                    {
+                        Player.localPlayer.data.currentStamina = 10f;
+                    });
+                    break;
+                }
+                case TimedType.NO_STAM:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            Player.localPlayer.data.currentStamina = 0f;
+                        });
+                        break;
+                    }
                 case TimedType.WIDE_CAMERA:
                     {
                         TestMod.ActionQueue.Enqueue(() =>
@@ -149,6 +200,14 @@ namespace BepinControl
                         TestMod.ActionQueue.Enqueue(() =>
                         {
                             Player.localPlayer.refs.controller.movementForce = 2.5f;
+                        });
+                        break;
+                    }
+                case TimedType.PLAYER_FREEZE:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            Player.localPlayer.refs.controller.movementForce = 0f;
                         });
                         break;
                     }

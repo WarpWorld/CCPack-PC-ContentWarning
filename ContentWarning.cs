@@ -26,6 +26,19 @@ namespace CrowdControl.Games.Packs.ContentWarning
                 new Effect("Heal Player 10%", "heal") { Category = "Health"},
                 new Effect("Heal Player 30%", "healb") { Category = "Health"},
                 new Effect("Full Heal Player", "healf") { Category = "Health"},
+                new Effect("Invulnerable", "invul") { Category = "Health", Duration = 30},
+                new Effect("One Hit KO", "ohko") { Category = "Health", Duration = 30},
+
+                /*
+                new Effect("Change Face to 0", "face_0") { Category = "Face"},
+                new Effect("Change Face to 1", "face_1") { Category = "Face"},
+                new Effect("Change Face to 2", "face_2") { Category = "Face"},
+                new Effect("Change Face to 3", "face_3") { Category = "Face"},
+                new Effect("Change Face to 4", "face_4") { Category = "Face"},
+                new Effect("Change Face to 5", "face_5") { Category = "Face"},
+                new Effect("Change Face to 6", "face_6") { Category = "Face"},
+                new Effect("Change Face to 7", "face_7") { Category = "Face"},
+                */
 
                 new Effect("Restore Oxygen 10%", "giveo210") { Category = "Oxygen"},
                 new Effect("Restore Oxygen 30%", "giveo230") { Category = "Oxygen"},
@@ -36,7 +49,8 @@ namespace CrowdControl.Games.Packs.ContentWarning
 
                 new Effect("Fill Stamina", "fillstam") { Category = "Stamina"},
                 new Effect("Empty Stamina", "emptystam") { Category = "Stamina"},
-
+                new Effect("Infinite Stamina", "infstam") { Category = "Stamina", Duration = 30},
+                new Effect("Disable Stamina", "nostam") { Category = "Stamina", Duration = 30},
 
                 new Effect("Make Sound", "sound"),
 
@@ -46,10 +60,11 @@ namespace CrowdControl.Games.Packs.ContentWarning
                 new Effect("Yank Player Backward", "backward") { Category = "Movement"},
                 new Effect("Ragdoll Player", "ragdoll") { Category = "Movement"},
 
-                new Effect("Ultra Slow Player", "ultraslow") { Category = "Movement", Duration = 30},
+                new Effect("Ultra Slow Player", "ultraslow") { Category = "Movement", Duration = 15},
                 new Effect("Slow Player", "slow") { Category = "Movement", Duration = 30},
                 new Effect("Fast Player", "fast") { Category = "Movement", Duration = 30},
-                new Effect("Ultra Fast Player", "ultrafast") { Category = "Movement", Duration = 30},
+                new Effect("Ultra Fast Player", "ultrafast") { Category = "Movement", Duration = 15},
+                new Effect("Freeze Player", "freeze") { Category = "Movement", Duration = 5},
 
                 new Effect("Low Jump", "lowjump") { Category = "Jumping", Duration = 30},
                 new Effect("High Jump", "highjump") { Category = "Jumping", Duration = 30},
@@ -110,6 +125,9 @@ namespace CrowdControl.Games.Packs.ContentWarning
                 new Effect("Take 10% View Quota", "views_-10") { Category = "Views"},
                 new Effect("Take 30% View Quota", "views_-30") { Category = "Views"},
                 new Effect("Take 100% View Quota", "views_-100") { Category = "Views"},
+
+                new Effect("Open Dive Bell", "opendoor"),
+                new Effect("Close Dive Bell", "closedoor"),
         };
     }
 }

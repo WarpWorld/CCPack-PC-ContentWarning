@@ -87,6 +87,42 @@ namespace BepinControl
             return new CrowdResponse(req.GetReqID(), status, message);
 
         }
+        public static CrowdResponse SetColor(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            string code = req.code;
+            code = code.Split('_')[1];
+
+            int num = int.Parse(code);
+
+            PlayerCustomizer playerCustomizer = UnityEngine.Object.FindObjectOfType<PlayerCustomizer>();
+            if (playerCustomizer == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+
+                    playerCustomizer.RPCA_PickColor(num);
+                    playerCustomizer.RPCA_PlayerLeftTerminal(true);
+
+                });
+
+
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
 
         public static CrowdResponse GiveViews(ControlClient client, CrowdRequest req)
         {
@@ -148,6 +184,72 @@ namespace BepinControl
                 {
                     PerlinShake perlin = (PerlinShake)getProperty(GamefeelHandler.instance, "perlin");
                     perlin.AddShake(15f, 0.2f, 15f);
+                });
+
+
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+        public static CrowdResponse OpenDoor(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            DivingBell bell = UnityEngine.Object.FindObjectOfType<DivingBell>();
+            if(bell == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            bool moving = (bool)getProperty(bell, "m_isMovingDoor");
+
+            if (moving || bell.opened) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    bell.AttemptSetOpen(true);
+                });
+
+
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+        public static CrowdResponse CloseDoor(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            DivingBell bell = UnityEngine.Object.FindObjectOfType<DivingBell>();
+            if (bell == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            bool moving = (bool)getProperty(bell, "m_isMovingDoor");
+
+            if (moving || !bell.opened) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    bell.AttemptSetOpen(false);
                 });
 
 
@@ -385,6 +487,75 @@ namespace BepinControl
 
         }
 
+
+        public static CrowdResponse InfStam(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.INF_STAM)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.NO_STAM)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.INF_STAM, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse Invul(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.INVUL)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.OHKO)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.INVUL, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse OHKO(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.INF_STAM)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.OHKO)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.OHKO, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse NoStam(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.INF_STAM)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.NO_STAM)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.NO_STAM, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
         public static CrowdResponse FlipCamera(ControlClient client, CrowdRequest req)
         {
 
@@ -449,6 +620,7 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_ULTRA_SLOW, dur * 1000).Run).Start();
@@ -468,6 +640,7 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_SLOW, dur * 1000).Run).Start();
@@ -487,6 +660,7 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_FAST, dur * 1000).Run).Start();
@@ -506,9 +680,30 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_ULTRA_FAST, dur * 1000).Run).Start();
+            return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
+        }
+
+        public static CrowdResponse Freeze(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            int dur = 30;
+            if (req.duration > 0) dur = req.duration / 1000;
+
+            if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_SLOW)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
+            new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_FREEZE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
         }
 

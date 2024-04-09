@@ -81,11 +81,17 @@ namespace BepinControl
 
                 {"fillstam", CrowdDelegates.FillStamina},
                 {"emptystam", CrowdDelegates.EmptyStamina},
+                {"infstam", CrowdDelegates.InfStam},
+                {"nostam", CrowdDelegates.NoStam},
+
+                {"invul", CrowdDelegates.Invul},
+                {"ohko", CrowdDelegates.OHKO},
 
                 {"ultraslow", CrowdDelegates.UltraSlow},
                 {"slow", CrowdDelegates.Slow},
                 {"fast", CrowdDelegates.Fast},
                 {"ultrafast", CrowdDelegates.UltraFast},
+                {"freeze", CrowdDelegates.Freeze},
 
                 {"lowjump", CrowdDelegates.LowJump},
                 {"highjump", CrowdDelegates.HighJump},
@@ -167,6 +173,18 @@ namespace BepinControl
                 {"views_-10", CrowdDelegates.GiveViews},
                 {"views_-30", CrowdDelegates.GiveViews},
                 {"views_-100", CrowdDelegates.GiveViews},
+
+                {"face_0", CrowdDelegates.SetColor},
+                {"face_1", CrowdDelegates.SetColor},
+                {"face_2", CrowdDelegates.SetColor},
+                {"face_3", CrowdDelegates.SetColor},
+                {"face_4", CrowdDelegates.SetColor},
+                {"face_5", CrowdDelegates.SetColor},
+                {"face_6", CrowdDelegates.SetColor},
+                {"face_7", CrowdDelegates.SetColor},
+
+                {"opendoor", CrowdDelegates.OpenDoor},
+                {"closedoor", CrowdDelegates.CloseDoor},
 
             };
         }
