@@ -779,6 +779,7 @@ namespace BepinControl
                         TakeDamagePost.instance.TakeDamageFeedback();
                         UI_Feedback.instance.TakeDamage(false);
                         Player.localPlayer.data.remainingOxygen -= 50.0f;
+                        TestMod.SendPlayerStats(Player.localPlayer);
                     }
                     catch (Exception e)
                     {
@@ -851,6 +852,7 @@ namespace BepinControl
                         TakeDamagePost.instance.TakeDamageFeedback();
                         UI_Feedback.instance.TakeDamage(false);
                         Player.localPlayer.data.remainingOxygen -= 150.0f;
+                        TestMod.SendPlayerStats(Player.localPlayer);
                     }
                     catch (Exception e)
                     {
@@ -886,6 +888,7 @@ namespace BepinControl
                         TakeDamagePost.instance.TakeDamageFeedback();
                         UI_Feedback.instance.TakeDamage(false);
                         Player.localPlayer.data.remainingOxygen = 0;
+                        TestMod.SendPlayerStats(Player.localPlayer);
                     }
                     catch (Exception e)
                     {
@@ -923,6 +926,7 @@ namespace BepinControl
                         Player.localPlayer.data.remainingOxygen += 50.0f;
                         if (Player.localPlayer.data.remainingOxygen > Player.localPlayer.data.maxOxygen)
                             Player.localPlayer.data.remainingOxygen = Player.localPlayer.data.maxOxygen;
+                        TestMod.SendPlayerStats(Player.localPlayer);
                     }
                     catch (Exception e)
                     {
@@ -960,6 +964,7 @@ namespace BepinControl
                         Player.localPlayer.data.remainingOxygen += 150.0f;
                         if (Player.localPlayer.data.remainingOxygen > Player.localPlayer.data.maxOxygen)
                             Player.localPlayer.data.remainingOxygen = Player.localPlayer.data.maxOxygen;
+                        TestMod.SendPlayerStats(Player.localPlayer);
                     }
                     catch (Exception e)
                     {
@@ -994,6 +999,7 @@ namespace BepinControl
                     {
                         UI_Feedback.instance.HealFeedback();
                         Player.localPlayer.data.remainingOxygen = Player.localPlayer.data.maxOxygen;
+                        TestMod.SendPlayerStats(Player.localPlayer);
                     }
                     catch (Exception e)
                     {
@@ -1262,6 +1268,7 @@ namespace BepinControl
                     {
                         UnityEngine.Vector3 force = new UnityEngine.Vector3(0, 0, 0);
                         callFunc(Player.localPlayer, "CallTakeDamageAndAddForceAndFall", new object[] { 10.0f, force, 0 });
+                        TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
                     }
@@ -1298,6 +1305,7 @@ namespace BepinControl
                     {
                         UnityEngine.Vector3 force = new UnityEngine.Vector3(0, 0, 0);
                         callFunc(Player.localPlayer, "CallTakeDamageAndAddForceAndFall", new object[] { 30.0f, force, 0 });
+                        TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
                     }
@@ -1333,6 +1341,7 @@ namespace BepinControl
                     try
                     {
                         callFunc(Player.localPlayer, "Heal", new object[] { 10.0f });
+                        TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
                     }
@@ -1368,6 +1377,7 @@ namespace BepinControl
                     try
                     {
                         callFunc(Player.localPlayer, "Heal", new object[] { 30.0f });
+                        TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
                     }
@@ -1403,6 +1413,7 @@ namespace BepinControl
                     try
                     {
                         callFunc(Player.localPlayer, "Heal", new object[] { Player.PlayerData.maxHealth });
+                        TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
                     }

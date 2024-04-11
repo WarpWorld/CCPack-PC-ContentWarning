@@ -28,6 +28,9 @@ using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography;
 using DefaultNamespace;
+using Photon.Realtime;
+using Photon.Pun;
+using ExitGames.Client.Photon;
 
 namespace BepinControl
 {
@@ -95,6 +98,44 @@ namespace BepinControl
                 }
             }
         }
+
+        const int MSG_CC= 33;
+
+        public static void SendPlayerStats(Player player)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "stats", Player.localPlayer.refs.view.ViewID, Player.localPlayer.data.remainingOxygen, Player.localPlayer.data.health }, val, SendOptions.SendReliable);
+
+
+        }
+
+        void OnEvent(EventData photonEvent)
+        {
+            if (photonEvent.Code == MSG_CC)
+            {
+                object[] array = (object[])photonEvent.CustomData;
+                switch (array[0])
+                {
+                    case "stats":
+
+                        for(int i=0; i < PlayerHandler.instance.players.Count; i++)
+                        {
+                            Player player = PlayerHandler.instance.players[i];
+                            if (player.refs.view.ViewID == (int)array[1]) {
+                                player.data.remainingOxygen = (float)array[2];
+                                player.data.health = (float)array[3];
+                                break;
+                            }
+                        }
+
+                        break;
+                }
+            }
+        }
+
 
         public static Queue<Action> ActionQueue = new Queue<Action>();
 
