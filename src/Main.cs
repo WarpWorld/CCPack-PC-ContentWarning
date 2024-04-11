@@ -177,7 +177,7 @@ namespace BepinControl
                                 player = PlayerHandler.instance.players[i];
                                 if (player.refs.view.ViewID == (int)array[2])
                                 {
-                                    Player.localPlayer.transform.position = player.transform.position;
+                                    CrowdDelegates.callFunc(Player.localPlayer, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
                                     break;
                                 }
                             }

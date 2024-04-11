@@ -224,7 +224,14 @@ namespace BepinControl
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
-                    Player.localPlayer.transform.position = player.transform.position;
+                    try
+                    {
+                        callFunc(Player.localPlayer, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
+                    }
+                    catch (Exception e)
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+                    }
                 });
 
 
@@ -257,17 +264,7 @@ namespace BepinControl
             int r = rnd.Next(list.Count);
             player = list[r];
 
-            try
-            {
-
-        
-
-
-            }
-            catch (Exception e)
-            {
-                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
-            }
+            TestMod.SendTele(player, Player.localPlayer);
 
             return new CrowdResponse(req.GetReqID(), status, message);
 
