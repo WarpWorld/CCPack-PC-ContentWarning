@@ -186,6 +186,9 @@ namespace BepinControl
                 {"opendoor", CrowdDelegates.OpenDoor},
                 {"closedoor", CrowdDelegates.CloseDoor},
 
+                {"teleto", CrowdDelegates.TeleToCrew},
+                {"telecrew", CrowdDelegates.TeleCrew},
+
             };
         }
 
