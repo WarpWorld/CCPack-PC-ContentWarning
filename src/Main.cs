@@ -107,6 +107,9 @@ namespace BepinControl
             {
                 Receivers = (ReceiverGroup)1
             };
+
+            TestMod.mls.LogInfo($"sending event {MSG_CC} of type 'stats'");
+
             PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "stats", Player.localPlayer.refs.view.ViewID, Player.localPlayer.data.remainingOxygen, Player.localPlayer.data.health }, val, SendOptions.SendReliable);
 
 
@@ -117,7 +120,10 @@ namespace BepinControl
             if (photonEvent.Code == MSG_CC)
             {
                 object[] array = (object[])photonEvent.CustomData;
-                switch (array[0])
+
+                TestMod.mls.LogInfo($"received event {MSG_CC} of type '{(string)array[0]}'");
+                
+                switch ((string)array[0])
                 {
                     case "stats":
 
