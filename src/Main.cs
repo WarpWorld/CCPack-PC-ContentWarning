@@ -123,8 +123,20 @@ namespace BepinControl
 
         }
 
+        public static void SendGiveItem(Player player, byte item)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "item", Player.localPlayer.refs.view.ViewID, item }, val, SendOptions.SendReliable);
+
+        }
+
         public void OnEvent(EventData photonEvent)
         {
+            Player player;
             try
             {
                 if (photonEvent.Code == MSG_CC)
@@ -134,10 +146,9 @@ namespace BepinControl
                     switch ((string)array[0])
                     {
                         case "stats":
-
                             for (int i = 0; i < PlayerHandler.instance.players.Count; i++)
                             {
-                                Player player = PlayerHandler.instance.players[i];
+                                player = PlayerHandler.instance.players[i];
                                 if (player.refs.view.ViewID == (int)array[1])
                                 {
                                     player.data.remainingOxygen = (float)array[2];
@@ -145,15 +156,61 @@ namespace BepinControl
                                     break;
                                 }
                             }
-
                             break;
                         case "round":
-
                             CrowdDelegates.setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", (int)array[1]);
 
                             SurfaceNetworkHandler.RoomStats.AddMoney((int)array[2] - SurfaceNetworkHandler.RoomStats.Money);
+                            break;
+                        case "item":
+                            if (!PhotonNetwork.IsMasterClient) return;
 
 
+                            byte itemid = (byte)array[2];
+                            Item item;
+
+                            player = null;
+                            for (int i = 0; i < PlayerHandler.instance.players.Count; i++)
+                            {
+                                
+                                if (PlayerHandler.instance.players[i].refs.view.ViewID == (int)array[1])
+                                {
+                                    player = PlayerHandler.instance.players[i];
+                                    break;
+                                }
+                            }
+
+                            if (!player) return;
+
+                            ItemInstanceData pickupdata = new ItemInstanceData(Guid.NewGuid());
+
+                            Vector3 pos = player.transform.position;
+
+                            PlayerInventory playerInventory;
+                            if (!player.TryGetInventory(out playerInventory)) return;
+
+                            Pickup pickup = PickupHandler.CreatePickup(itemid, pickupdata, pos, UnityEngine.Random.rotation, (Vector3.up + UnityEngine.Random.onUnitSphere) * 2f, UnityEngine.Random.onUnitSphere * 5f);
+
+                            if (ItemDatabase.TryGetItemFromID(itemid, out item))
+                            {
+                                ItemInstanceData instanceData = (ItemInstanceData)CrowdDelegates.getProperty(pickup, "instanceData");
+
+                                ItemInstanceData data = instanceData.Copy();
+
+
+                                InventorySlot inventorySlot;
+                                if (playerInventory.TryAddItem(new ItemDescriptor(item, data), out inventorySlot))
+                                {
+                                    player.refs.view.RPC("RPC_SelectSlot", player.refs.view.Owner, new object[]
+                                    {
+                                           inventorySlot.SlotID
+                                    });
+                                    pickup.m_photonView.RPC("RPC_Remove", RpcTarget.MasterClient, Array.Empty<object>());
+
+                                    playerInventory.SyncInventoryToOthers();
+                                }
+                            }
+                        
                             break;
                     }
                 }

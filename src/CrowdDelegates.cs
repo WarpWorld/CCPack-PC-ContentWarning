@@ -363,8 +363,13 @@ namespace BepinControl
 
                 if (!playerInventory.TryGetFeeSlot(out slot)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
+                if (!PhotonNetwork.IsMasterClient)
+                {
+                    TestMod.SendGiveItem(Player.localPlayer, id);
+                    return new CrowdResponse(req.GetReqID(), status, message);
+                }
+
                 byte itemid = id;
-                id++;
                 Item item;
 
                 ItemInstanceData pickupdata = new ItemInstanceData(Guid.NewGuid());
