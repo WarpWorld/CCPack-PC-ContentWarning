@@ -177,7 +177,7 @@ namespace BepinControl
                                 player = PlayerHandler.instance.players[i];
                                 if (player.refs.view.ViewID == (int)array[2])
                                 {
-                                    CrowdDelegates.callFunc(Player.localPlayer, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
+                                    CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
                                     Player.localPlayer.transform.position = player.transform.position;
                                     Player.localPlayer.data.lastSimplifiedPosition = player.data.lastSimplifiedPosition;
                                     break;
@@ -275,11 +275,6 @@ namespace BepinControl
         static void Spawning(RoundSpawner __instance)
         {
             spawner = __instance;
-
-            foreach(GameObject monster in __instance.possibleSpawns)
-
-            TestMod.mls.LogInfo($"Monster Type: {monster.name}");
-
         }
 
     }
