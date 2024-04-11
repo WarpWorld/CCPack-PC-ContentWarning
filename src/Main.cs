@@ -141,7 +141,7 @@ namespace BepinControl
                 Receivers = (ReceiverGroup)1
             };
 
-            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "kill", Player.localPlayer.refs.view.ViewID }, val, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "kill", player.refs.view.ViewID }, val, SendOptions.SendReliable);
 
         }
 
