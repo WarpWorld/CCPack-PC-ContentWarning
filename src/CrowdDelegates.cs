@@ -272,6 +272,31 @@ namespace BepinControl
 
         }
 
+        public static CrowdResponse KillCrew(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            Player player = null;
+            List<Player> list = new List<Player>();
+
+            foreach (Player p in PlayerHandler.instance.playerAlive)
+            {
+                if (p != Player.localPlayer)
+                    list.Add(p);
+            }
+
+            if (list.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            int r = rnd.Next(list.Count);
+            player = list[r];
+
+            TestMod.SendKill(player);
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
         public static CrowdResponse OpenDoor(ControlClient client, CrowdRequest req)
         {
 

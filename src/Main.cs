@@ -134,6 +134,17 @@ namespace BepinControl
 
         }
 
+        public static void SendKill(Player player)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "kill", Player.localPlayer.refs.view.ViewID }, val, SendOptions.SendReliable);
+
+        }
+
         public static void SendTele(Player from, Player to)
         {
             RaiseEventOptions val = new RaiseEventOptions
@@ -183,6 +194,13 @@ namespace BepinControl
                                     break;
                                 }
                             }
+                            break;
+                        case "kill":
+
+                            if (Player.localPlayer.refs.view.ViewID != (int)array[1]) return;
+
+                            CrowdDelegates.callFunc(Player.localPlayer, "CallDie", null);
+
                             break;
                         case "round":
                             CrowdDelegates.setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", (int)array[1]);
