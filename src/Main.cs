@@ -142,6 +142,16 @@ namespace BepinControl
             }
         }
 
+        private void OnEnable()
+        {
+            PhotonNetwork.AddCallbackTarget((object)this);
+        }
+
+        private void OnDisable()
+        {
+            PhotonNetwork.RemoveCallbackTarget((object)this);
+        }
+
 
         public static Queue<Action> ActionQueue = new Queue<Action>();
 
