@@ -35,7 +35,7 @@ using ExitGames.Client.Photon;
 namespace BepinControl
 {
     [BepInPlugin(modGUID, modName, modVersion)]
-    public class TestMod : BaseUnityPlugin
+    public class TestMod : BaseUnityPlugin, IOnEventCallback
     {
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
@@ -115,7 +115,7 @@ namespace BepinControl
 
         }
 
-        void OnEvent(EventData photonEvent)
+        public void OnEvent(EventData photonEvent)
         {
             if (photonEvent.Code == MSG_CC)
             {
