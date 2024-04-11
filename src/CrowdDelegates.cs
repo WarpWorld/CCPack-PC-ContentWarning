@@ -297,6 +297,46 @@ namespace BepinControl
 
         }
 
+        public static CrowdResponse GiveCrewItem(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            string code = req.code;
+            code = code.Split('_')[1];
+
+            byte id = byte.Parse(code);
+
+            Player player = null;
+            List<Player> list = new List<Player>();
+
+            foreach (Player p in PlayerHandler.instance.playerAlive)
+            {
+                if (p != Player.localPlayer)
+                {
+
+                    InventorySlot slot;
+
+                    PlayerInventory playerInventory;
+                    if (!Player.localPlayer.TryGetInventory(out playerInventory))continue;
+
+                    if (!playerInventory.TryGetFeeSlot(out slot)) continue;
+
+                    list.Add(p);
+                }
+            }
+
+            if (list.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            int r = rnd.Next(list.Count);
+            player = list[r];
+
+            TestMod.SendGiveItem(player, id);
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
         public static CrowdResponse OpenDoor(ControlClient client, CrowdRequest req)
         {
 
