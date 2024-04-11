@@ -108,37 +108,58 @@ namespace BepinControl
                 Receivers = (ReceiverGroup)1
             };
 
-            TestMod.mls.LogInfo($"sending event {MSG_CC} of type 'stats'");
-
             PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "stats", Player.localPlayer.refs.view.ViewID, Player.localPlayer.data.remainingOxygen, Player.localPlayer.data.health }, val, SendOptions.SendReliable);
 
+        }
+
+        public static void SendRoundStats(Player player)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "round", SurfaceNetworkHandler.RoomStats.CurrentQuota, SurfaceNetworkHandler.RoomStats.Money }, val, SendOptions.SendReliable);
 
         }
 
         public void OnEvent(EventData photonEvent)
         {
-            if (photonEvent.Code == MSG_CC)
+            try
             {
-                object[] array = (object[])photonEvent.CustomData;
-
-                TestMod.mls.LogInfo($"received event {MSG_CC} of type '{(string)array[0]}'");
-                
-                switch ((string)array[0])
+                if (photonEvent.Code == MSG_CC)
                 {
-                    case "stats":
+                    object[] array = (object[])photonEvent.CustomData;
 
-                        for(int i=0; i < PlayerHandler.instance.players.Count; i++)
-                        {
-                            Player player = PlayerHandler.instance.players[i];
-                            if (player.refs.view.ViewID == (int)array[1]) {
-                                player.data.remainingOxygen = (float)array[2];
-                                player.data.health = (float)array[3];
-                                break;
+                    switch ((string)array[0])
+                    {
+                        case "stats":
+
+                            for (int i = 0; i < PlayerHandler.instance.players.Count; i++)
+                            {
+                                Player player = PlayerHandler.instance.players[i];
+                                if (player.refs.view.ViewID == (int)array[1])
+                                {
+                                    player.data.remainingOxygen = (float)array[2];
+                                    player.data.health = (float)array[3];
+                                    break;
+                                }
                             }
-                        }
 
-                        break;
+                            break;
+                        case "round":
+
+                            CrowdDelegates.setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", (int)array[1]);
+                            CrowdDelegates.setProperty(SurfaceNetworkHandler.RoomStats, "Money",(int)array[2]);
+
+
+                            break;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+
             }
         }
 
