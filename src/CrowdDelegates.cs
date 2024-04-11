@@ -447,8 +447,6 @@ namespace BepinControl
             try
             {
 
-
-
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try
@@ -478,7 +476,44 @@ namespace BepinControl
             }
 
             return new CrowdResponse(req.GetReqID(), status, message);
+        }
 
+        public static CrowdResponse SpawnMonsterCrew(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            string code = req.code;
+            code = code.Split('_')[1];
+
+            if (code == "Whisk") code = "Toolkit_Wisk";
+
+            Player player = null;
+            List<Player> list = new List<Player>();
+
+            foreach (Player p in PlayerHandler.instance.playerAlive)
+            {
+                if (p != Player.localPlayer)
+                    list.Add(p);
+            }
+
+            if (list.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            int r = rnd.Next(list.Count);
+            player = list[r];
+
+            try
+            {
+
+                TestMod.SendSpawn(player, code);
+
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
         }
 
         public static CrowdResponse GiveItem(ControlClient client, CrowdRequest req)

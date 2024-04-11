@@ -31,6 +31,7 @@ using DefaultNamespace;
 using Photon.Realtime;
 using Photon.Pun;
 using ExitGames.Client.Photon;
+using Unity.Mathematics;
 
 namespace BepinControl
 {
@@ -130,7 +131,18 @@ namespace BepinControl
                 Receivers = (ReceiverGroup)1
             };
 
-            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "item", Player.localPlayer.refs.view.ViewID, item }, val, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "item", player.refs.view.ViewID, item }, val, SendOptions.SendReliable);
+
+        }
+
+        public static void SendSpawn(Player player, string code)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "spawn", player.refs.view.ViewID, code }, val, SendOptions.SendReliable);
 
         }
 
@@ -167,6 +179,20 @@ namespace BepinControl
 
                     switch ((string)array[0])
                     {
+                        case "spawn":
+                            if (Player.localPlayer.refs.view.ViewID != (int)array[1]) return;
+
+                            float dist = 15.0f;
+                            RaycastHit raycastHit = HelperFunctions.LineCheck(MainCamera.instance.transform.position, MainCamera.instance.transform.position + MainCamera.instance.transform.forward * dist, HelperFunctions.LayerType.TerrainProp, 0f);
+                            Vector3 vector = MainCamera.instance.transform.position + MainCamera.instance.transform.forward * dist;
+                            if (raycastHit.collider != null)
+                            {
+                                vector = raycastHit.point;
+                            }
+                            vector = HelperFunctions.GetGroundPos(vector + Vector3.up * 1f, HelperFunctions.LayerType.TerrainProp, 0f);
+                            PhotonNetwork.Instantiate((string)array[2], vector, quaternion.identity, 0, null);
+                            break;
+
                         case "stats":
                             for (int i = 0; i < PlayerHandler.instance.players.Count; i++)
                             {

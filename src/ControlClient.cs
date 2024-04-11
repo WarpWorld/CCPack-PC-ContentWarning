@@ -153,6 +153,22 @@ namespace BepinControl
                 {"spawn_Whisk", CrowdDelegates.SpawnMonster},
                 {"spawn_Weeping", CrowdDelegates.SpawnMonster},
 
+                {"cspawn_Jello", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Zombe", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Spider", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Snatcho", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Bombs", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_BarnacleBall", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Dog", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Ear", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_BigSlap", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_EyeGuy", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Flicker", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Harpoon", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Mouthe", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Whisk", CrowdDelegates.SpawnMonsterCrew},
+                {"cspawn_Weeping", CrowdDelegates.SpawnMonsterCrew},
+
                 {"shake", CrowdDelegates.ShakeScreen},
                 {"shakebig", CrowdDelegates.ShakeScreenBig},
 
