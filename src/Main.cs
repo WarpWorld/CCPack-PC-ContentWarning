@@ -178,6 +178,8 @@ namespace BepinControl
                                 if (player.refs.view.ViewID == (int)array[2])
                                 {
                                     CrowdDelegates.callFunc(Player.localPlayer, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
+                                    Player.localPlayer.transform.position = player.transform.position;
+                                    Player.localPlayer.data.lastSimplifiedPosition = player.data.lastSimplifiedPosition;
                                     break;
                                 }
                             }

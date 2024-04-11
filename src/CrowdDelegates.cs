@@ -227,6 +227,8 @@ namespace BepinControl
                     try
                     {
                         callFunc(Player.localPlayer, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
+                        Player.localPlayer.transform.position = player.transform.position;
+                        Player.localPlayer.data.lastSimplifiedPosition = player.data.lastSimplifiedPosition;
                     }
                     catch (Exception e)
                     {
