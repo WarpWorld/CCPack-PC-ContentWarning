@@ -112,7 +112,7 @@ namespace BepinControl
 
         }
 
-        public static void SendRoundStats(Player player)
+        public static void SendRoundStats()
         {
             RaiseEventOptions val = new RaiseEventOptions
             {

@@ -75,6 +75,7 @@ namespace BepinControl
                 {
                     SurfaceNetworkHandler.RoomStats.AddMoney(num);
                     Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, num>0);
+                    TestMod.SendRoundStats();
                 });
 
 
@@ -156,6 +157,7 @@ namespace BepinControl
                     setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", SurfaceNetworkHandler.RoomStats.CurrentQuota + num);
                     callFunc(SurfaceNetworkHandler.RoomStats, "OnStatsUpdated", null);
                     Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", num > 0);
+                    TestMod.SendRoundStats();
                 });
 
 
