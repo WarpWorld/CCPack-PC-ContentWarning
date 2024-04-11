@@ -199,6 +199,80 @@ namespace BepinControl
 
         }
 
+        public static CrowdResponse TeleToCrew(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            Player player = null;
+            List<Player> list = new List<Player>();
+
+            foreach(Player p in PlayerHandler.instance.playerAlive)
+            {
+                if(p!=Player.localPlayer)
+                    list.Add(p);
+            }
+
+            if(list.Count==0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            int r = rnd.Next(list.Count);
+            player = list[r];
+
+            try
+            {
+
+
+                TestMod.ActionQueue.Enqueue(() =>
+                {
+                    Player.localPlayer.transform.position = player.transform.position;
+                });
+
+
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+        public static CrowdResponse TeleCrew(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            Player player = null;
+            List<Player> list = new List<Player>();
+
+            foreach (Player p in PlayerHandler.instance.playerAlive)
+            {
+                if (p != Player.localPlayer)
+                    list.Add(p);
+            }
+
+            if (list.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            int r = rnd.Next(list.Count);
+            player = list[r];
+
+            try
+            {
+
+        
+
+
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
         public static CrowdResponse OpenDoor(ControlClient client, CrowdRequest req)
         {
 

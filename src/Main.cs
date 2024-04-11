@@ -134,6 +134,17 @@ namespace BepinControl
 
         }
 
+        public static void SendTele(Player from, Player to)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "tele", from.refs.view.ViewID, to.refs.view.ViewID }, val, SendOptions.SendReliable);
+
+        }
+
         public void OnEvent(EventData photonEvent)
         {
             Player player;
@@ -153,6 +164,20 @@ namespace BepinControl
                                 {
                                     player.data.remainingOxygen = (float)array[2];
                                     player.data.health = (float)array[3];
+                                    break;
+                                }
+                            }
+                            break;
+                        case "tele":
+
+                            if (Player.localPlayer.refs.view.ViewID != (int)array[1]) return;
+
+                            for (int i = 0; i < PlayerHandler.instance.players.Count; i++)
+                            {
+                                player = PlayerHandler.instance.players[i];
+                                if (player.refs.view.ViewID == (int)array[2])
+                                {
+                                    Player.localPlayer.transform.position = player.transform.position;
                                     break;
                                 }
                             }
