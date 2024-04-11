@@ -150,7 +150,8 @@ namespace BepinControl
                         case "round":
 
                             CrowdDelegates.setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", (int)array[1]);
-                            CrowdDelegates.setProperty(SurfaceNetworkHandler.RoomStats, "Money",(int)array[2]);
+
+                            SurfaceNetworkHandler.RoomStats.AddMoney((int)array[2] - SurfaceNetworkHandler.RoomStats.Money);
 
 
                             break;
