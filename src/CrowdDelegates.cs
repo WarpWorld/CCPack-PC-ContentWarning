@@ -254,18 +254,6 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            Player player = null;
-            List<Player> list = new List<Player>();
-
-            foreach(Player p in PlayerHandler.instance.playerAlive)
-            {
-                if(p!=Player.localPlayer)
-                    list.Add(p);
-            }
-
-            if(list.Count==0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-            int r = rnd.Next(list.Count);
-            player = list[r];
 
             try
             {
@@ -275,7 +263,8 @@ namespace BepinControl
                 {
                     try
                     {
-                        callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.data.groundPos - Player.localPlayer.data.groundPos);
+                        Transform spawnPoint = (Transform)CrowdDelegates.callAndReturnFunc(SpawnHandler.Instance, "GetSpawnPoint", Spawns.DiveBell);
+                        callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", spawnPoint.position - Player.localPlayer.data.groundPos);
  
                     }
                     catch (Exception e)
@@ -315,6 +304,31 @@ namespace BepinControl
             player = list[r];
 
             TestMod.SendTele(player, Player.localPlayer);
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+
+        }
+
+        public static CrowdResponse TeleCrewBell(ControlClient client, CrowdRequest req)
+        {
+
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+            Player player = null;
+            List<Player> list = new List<Player>();
+
+            foreach (Player p in PlayerHandler.instance.playerAlive)
+            {
+                if (p != Player.localPlayer)
+                    list.Add(p);
+            }
+
+            if (list.Count == 0) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            int r = rnd.Next(list.Count);
+            player = list[r];
+
+            TestMod.SendTeleBell(player);
 
             return new CrowdResponse(req.GetReqID(), status, message);
 

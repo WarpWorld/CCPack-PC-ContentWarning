@@ -170,6 +170,17 @@ namespace BepinControl
 
         }
 
+        public static void SendTeleBell(Player from)
+        {
+            RaiseEventOptions val = new RaiseEventOptions
+            {
+                Receivers = (ReceiverGroup)1
+            };
+
+            PhotonNetwork.RaiseEvent(MSG_CC, new object[] { "telebell", from.refs.view.ViewID }, val, SendOptions.SendReliable);
+
+        }
+
         public void OnEvent(EventData photonEvent)
         {
             Player player;
@@ -216,10 +227,19 @@ namespace BepinControl
                                 player = PlayerHandler.instance.players[i];
                                 if (player.refs.view.ViewID == (int)array[2])
                                 {
-                                    CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player..data.groundPos - Player.localPlayer.data.groundPos);
+                                    CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.data.groundPos - Player.localPlayer.data.groundPos);
                                     break;
                                 }
                             }
+                            break;
+                        case "telebell":
+
+                            if (Player.localPlayer.refs.view.ViewID != (int)array[1]) return;
+
+                            Transform spawnPoint = (Transform)CrowdDelegates.callAndReturnFunc(SpawnHandler.Instance, "GetSpawnPoint", Spawns.DiveBell);
+
+                            CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", spawnPoint.position - Player.localPlayer.data.groundPos);
+ 
                             break;
                         case "kill":
 
