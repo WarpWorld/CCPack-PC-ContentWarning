@@ -52,6 +52,8 @@ namespace BepinControl
 
         public static RoundSpawner spawner = null;
         public static List<IBudgetCost> spawns = new List<IBudgetCost>();
+        public static System.Random rnd = new System.Random();
+        public static List<string> comments = new List<string>();
 
         void Awake()
         {
@@ -214,9 +216,7 @@ namespace BepinControl
                                 player = PlayerHandler.instance.players[i];
                                 if (player.refs.view.ViewID == (int)array[2])
                                 {
-                                    CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.transform.position - Player.localPlayer.transform.position);
-                                    Player.localPlayer.transform.position = player.transform.position;
-                                    Player.localPlayer.data.lastSimplifiedPosition = player.data.lastSimplifiedPosition;
+                                    CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player..data.groundPos - Player.localPlayer.data.groundPos);
                                     break;
                                 }
                             }
@@ -321,6 +321,52 @@ namespace BepinControl
             spawner = __instance;
         }
 
+        [HarmonyPatch(typeof(ContentBuffer), "GenerateComments")]
+        [HarmonyPostfix]
+        static void Comments(List<Comment> __result)
+        {
+            string[] list = 
+            new string[]
+            {
+                "<playername> are you using Crowd Control?",
+                "Wait? Is this Crowd Control enabled?",
+                "Crowd Control?",
+                "How do I use Crowd Control?",
+                "<playername> is using Crowd Control!!!",
+                "I didn't know this had Crowd Control!",
+                "What is Crowd Control?",
+                "Why does everyone keep saying Crowd Control?",
+                "The Crowd Control team is awesome!"
+            };
+
+            foreach (var comment in __result)
+            {
+                if (comments.Count() > 1)
+                {
+                    if (rnd.Next(4) == 1)
+                    {
+                        int r = rnd.Next(comments.Count());
+                        comment.Text = comments[r];
+                        Player player = PlayerHandler.instance.players[rnd.Next(PlayerHandler.instance.players.Count())];
+                        comment.Text = comment.Text.Replace("<playername>", player.name);
+
+                        comments.RemoveAt(r);
+                    }
+                }
+                else
+                {
+                    if (rnd.Next(8) == 1)
+                    {
+                        comment.Text = list[rnd.Next(list.Count())];
+
+                        Player player = PlayerHandler.instance.players[rnd.Next(PlayerHandler.instance.players.Count())];
+                        comment.Text = comment.Text.Replace("<playername>", player.name);
+                    }
+                }
+            }
+
+            comments.Clear();
+        }
     }
         
 }

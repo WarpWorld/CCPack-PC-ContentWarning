@@ -204,6 +204,8 @@ namespace BepinControl
 
                 {"teleto", CrowdDelegates.TeleToCrew},
                 {"telecrew", CrowdDelegates.TeleCrew},
+                {"teletobell", CrowdDelegates.TeleToBell},
+                {"telecrewbell", CrowdDelegates.TeleCrewBell},
 
                 {"killcrew", CrowdDelegates.KillCrew},
 
