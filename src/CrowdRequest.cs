@@ -14,6 +14,7 @@ namespace BepinControl
         public int duration;
         public string type;
         public string viewer;
+        public string streamer;
 
         public static CrowdRequest Recieve(ControlClient client, Socket socket)
         {

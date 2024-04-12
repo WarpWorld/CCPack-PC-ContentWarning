@@ -60,6 +60,8 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
 
+            
+
             int num = int.Parse(code);
 
             if (num < 0)
@@ -159,7 +161,7 @@ namespace BepinControl
                     callFunc(SurfaceNetworkHandler.RoomStats, "OnStatsUpdated", null);
                     Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", num > 0);
                     TestMod.SendRoundStats();
-                    if (num > 0) TestMod.comments.Add("I watched this before it was even uploaded!");
+                    if (num > 0) TestMod.comments.Add("I watched this before it was even uploaded! #CrowdControl");
                 });
 
 
@@ -368,7 +370,7 @@ namespace BepinControl
             player = list[r];
 
             TestMod.SendKill(player);
-            TestMod.comments.Add($"Was {player.data.player.name} killed by Crowd Control?");
+            TestMod.comments.Add($"Was {player.refs.view.Owner.NickName} killed by Crowd Control?");
 
             return new CrowdResponse(req.GetReqID(), status, message);
 
@@ -409,7 +411,7 @@ namespace BepinControl
             player = list[r];
 
             TestMod.SendGiveItem(player, id);
-            TestMod.comments.Add($"I gave {player.data.player.name} a item!");
+            TestMod.comments.Add($"I gave {player.refs.view.Owner.NickName} a item!");
 
             return new CrowdResponse(req.GetReqID(), status, message);
 
@@ -437,7 +439,7 @@ namespace BepinControl
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     bell.AttemptSetOpen(true);
-                    TestMod.comments.Add("The doors are opening on their own!");
+                    TestMod.comments.Add("Someone is controlling the door with Crowd Control!");
                 });
 
 
@@ -472,7 +474,7 @@ namespace BepinControl
 
                 TestMod.ActionQueue.Enqueue(() =>
                 {
-                    TestMod.comments.Add("The doors are closing on their own!");
+                    TestMod.comments.Add("Someone is controlling the door with Crowd Control!");
                     bell.AttemptSetOpen(false);
                 });
 
@@ -674,7 +676,7 @@ namespace BepinControl
                                 pickup.m_photonView.RPC("RPC_Remove", RpcTarget.MasterClient, Array.Empty<object>());
 
                                 playerInventory.SyncInventoryToOthers();
-                                TestMod.comments.Add($"You're welcome for the item {Player.localPlayer.data.player.name}!");
+                                TestMod.comments.Add($"You're welcome for the item {Player.localPlayer.refs.view.Owner.NickName}!");
                             }
                         }
                     }
@@ -758,7 +760,7 @@ namespace BepinControl
                     {
                         ItemDescriptor item;
                         playerInventory.TryRemoveItemFromSlot(Player.localPlayer.data.selectedItemSlot, out item);
-                        TestMod.comments.Add("Where'd my item go?");
+                        TestMod.comments.Add("Someone took the item away with Crowd Control!");
                     }
                     catch (Exception e)
                     {
@@ -1002,7 +1004,7 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
-            TestMod.comments.Add("I'm so fast!");
+            TestMod.comments.Add($"woah! {Player.localPlayer.refs.view.Owner.NickName} is so fast! #CrowdControl");
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_ULTRA_FAST, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
@@ -1026,7 +1028,7 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
-            TestMod.comments.Add($"I froze {Player.localPlayer.data.player.name} with Crowd Control! hahahaha");
+            TestMod.comments.Add($"I froze {Player.localPlayer.refs.view.Owner.NickName} with Crowd Control! hahahaha");
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_FREEZE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
@@ -1518,6 +1520,7 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
             if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
             if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
@@ -1681,7 +1684,7 @@ namespace BepinControl
                         UnityEngine.Vector3 force = new UnityEngine.Vector3(0, 0, 0);
                         callFunc(Player.localPlayer, "CallTakeDamageAndAddForceAndFall", new object[] { 30.0f, force, 0 });
                         TestMod.SendPlayerStats(Player.localPlayer);
-                        TestMod.comments.Add("Something hurt me out of nowhere!");
+                        TestMod.comments.Add($"Stop hurting {Player.localPlayer.refs.view.Owner.NickName} with Crowd Control!");
                         //Modal.ShowError("CC", msg);
                     }
                     catch (Exception e)
@@ -1795,7 +1798,7 @@ namespace BepinControl
                     {
                         callFunc(Player.localPlayer, "Heal", new object[] { Player.PlayerData.maxHealth });
                         TestMod.SendPlayerStats(Player.localPlayer);
-                        TestMod.comments.Add("Thanks for the heal, chat!");
+                        TestMod.comments.Add($"Yo, {req.viewer} healing {Player.localPlayer.refs.view.Owner.NickName} with Crowd Control is the goat!");
                         //Modal.ShowError("CC", msg);
                     }
                     catch (Exception e)
@@ -1830,7 +1833,7 @@ namespace BepinControl
                     try
                     {
                         callFunc(Player.localPlayer, "CallDie", null);
-                        TestMod.comments.Add($"I just killed {Player.localPlayer.data.player.name} with Crowd Control!");
+                        TestMod.comments.Add($"I just killed {Player.localPlayer.refs.view.Owner.NickName} with Crowd Control!");
                         //Modal.ShowError("CC", msg);
                     }
                     catch (Exception e)
