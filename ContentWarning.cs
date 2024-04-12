@@ -66,8 +66,10 @@ namespace CrowdControl.Games.Packs.ContentWarning
                 new Effect("Fast Player", "fast") { Category = "Movement", Duration = 30},
                 new Effect("Ultra Fast Player", "ultrafast") { Category = "Movement", Duration = 15},
                 new Effect("Freeze Player", "freeze") { Category = "Movement", Duration = 5},
-                //new Effect("Teleport to Crewmate", "teleto") { Category = "Movement"},
-                //new Effect("Teleport Crewmate to Player", "telecrew") { Category = "Movement"},
+                new Effect("Teleport to Crewmate", "teleto") { Category = "Movement"},
+                new Effect("Teleport Crewmate to Player", "telecrew") { Category = "Movement"},
+                new Effect("Teleport to Dive Bell", "teletobell") { Category = "Movement"},
+                new Effect("Teleport Crewmate to Dive Bell", "telecrewbell") { Category = "Movement"},
 
                 new Effect("Low Jump", "lowjump") { Category = "Jumping", Duration = 30},
                 new Effect("High Jump", "highjump") { Category = "Jumping", Duration = 30},
