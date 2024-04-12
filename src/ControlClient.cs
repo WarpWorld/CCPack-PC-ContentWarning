@@ -255,9 +255,9 @@ namespace BepinControl
 
                 if (Player.localPlayer == null) return false;
 
-                if (SceneManager.GetActiveScene().name == "SurfaceScene") return false;
-                if (Player.localPlayer.data.isInDiveBell) return false;
-                if (!Level.currentLevel || !Level.currentLevel.levelIsReady) return false;
+                //if (SceneManager.GetActiveScene().name == "SurfaceScene") return false;
+                //if (Player.localPlayer.data.isInDiveBell) return false;
+                //if (!Level.currentLevel || !Level.currentLevel.levelIsReady) return false;
 
 
             }

@@ -180,6 +180,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             try
             {
 
@@ -207,12 +210,16 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             Player player = null;
             List<Player> list = new List<Player>();
 
-            foreach(Player p in PlayerHandler.instance.playerAlive)
+
+            foreach (Player p in PlayerHandler.instance.playerAlive)
             {
-                if(p!=Player.localPlayer)
+                if (p != Player.localPlayer)
                     list.Add(p);
             }
 
@@ -254,6 +261,7 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
 
             try
             {
@@ -290,6 +298,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+
             Player player = null;
             List<Player> list = new List<Player>();
 
@@ -314,6 +324,8 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
 
             Player player = null;
             List<Player> list = new List<Player>();
@@ -340,6 +352,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+
             Player player = null;
             List<Player> list = new List<Player>();
 
@@ -354,7 +368,7 @@ namespace BepinControl
             player = list[r];
 
             TestMod.SendKill(player);
-            TestMod.comments.Add("Killed by Crowd Control?");
+            TestMod.comments.Add($"Was {player.data.player.name} killed by Crowd Control?");
 
             return new CrowdResponse(req.GetReqID(), status, message);
 
@@ -395,7 +409,7 @@ namespace BepinControl
             player = list[r];
 
             TestMod.SendGiveItem(player, id);
-            TestMod.comments.Add("Thanks for the item, chat!");
+            TestMod.comments.Add($"I gave {player.data.player.name} a item!");
 
             return new CrowdResponse(req.GetReqID(), status, message);
 
@@ -407,6 +421,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+            
             DivingBell bell = UnityEngine.Object.FindObjectOfType<DivingBell>();
             if(bell == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
@@ -440,6 +456,8 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
 
             DivingBell bell = UnityEngine.Object.FindObjectOfType<DivingBell>();
             if (bell == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
@@ -475,6 +493,12 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+
             try
             {
 
@@ -504,6 +528,10 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             string code = req.code;
             code = code.Split('_')[1];
@@ -551,6 +579,10 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+
+            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+
+
             string code = req.code;
             code = code.Split('_')[1];
 
@@ -561,7 +593,7 @@ namespace BepinControl
 
             foreach (Player p in PlayerHandler.instance.playerAlive)
             {
-                if (p != Player.localPlayer)
+                if (p != Player.localPlayer && !p.data.dead && !p.data.isInDiveBell)
                     list.Add(p);
             }
 
@@ -589,6 +621,8 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
 
             string code = req.code;
             code = code.Split('_')[1];
@@ -640,7 +674,7 @@ namespace BepinControl
                                 pickup.m_photonView.RPC("RPC_Remove", RpcTarget.MasterClient, Array.Empty<object>());
 
                                 playerInventory.SyncInventoryToOthers();
-                                TestMod.comments.Add("Thanks for the item, chat!");
+                                TestMod.comments.Add($"You're welcome for the item {Player.localPlayer.data.player.name}!");
                             }
                         }
                     }
@@ -667,8 +701,11 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            if(Player.localPlayer.data.currentItem == null)return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if(Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            if (Player.localPlayer.data.currentItem == null)return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if(Player.localPlayer.data.selectedItemSlot == -1) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            
 
             try
             {
@@ -703,6 +740,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is safe in Diving Bell");
             if (Player.localPlayer.data.currentItem == null) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (Player.localPlayer.data.selectedItemSlot == -1) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             PlayerInventory playerInventory;
@@ -744,6 +784,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -761,6 +803,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -777,6 +821,8 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+            
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
 
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
@@ -795,6 +841,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -811,6 +859,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+          
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is safe in Diving Bell.");
 
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
@@ -829,6 +880,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is safe in Diving Bell.");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -845,6 +899,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+          
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is safe in Diving Bell.");
 
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
@@ -863,6 +920,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
@@ -884,6 +944,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -904,6 +967,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -923,6 +989,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
@@ -945,6 +1014,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -954,7 +1026,7 @@ namespace BepinControl
             if (TimedThread.isRunning(TimedType.PLAYER_ULTRA_FAST)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             if (TimedThread.isRunning(TimedType.PLAYER_FREEZE)) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
-            TestMod.comments.Add("I can't move, what gives?");
+            TestMod.comments.Add($"I froze {Player.localPlayer.data.player.name} with Crowd Control! hahahaha");
 
             new Thread(new TimedThread(req.GetReqID(), TimedType.PLAYER_FREEZE, dur * 1000).Run).Start();
             return new TimedResponse(req.GetReqID(), dur * 1000, CrowdResponse.Status.STATUS_SUCCESS);
@@ -966,6 +1038,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -983,6 +1057,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
@@ -1002,6 +1079,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             int dur = 30;
             if (req.duration > 0) dur = req.duration / 1000;
 
@@ -1019,6 +1099,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (Player.localPlayer.data.remainingOxygen <= 50.0f)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
@@ -1055,7 +1138,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (Player.localPlayer.data.sinceGrounded < 0.5f && Player.localPlayer.data.sinceJump > 0.6f) { 
 
@@ -1093,6 +1177,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             if (Player.localPlayer.data.remainingOxygen <= 150.0f)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1129,6 +1216,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             if (Player.localPlayer.data.remainingOxygen <= 50.0f)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1164,6 +1254,8 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
 
             if (Player.localPlayer.data.remainingOxygen >= Player.localPlayer.data.maxOxygen)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
@@ -1203,6 +1295,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             if (Player.localPlayer.data.remainingOxygen >= Player.localPlayer.data.maxOxygen)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1241,6 +1335,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             if (Player.localPlayer.data.remainingOxygen >= Player.localPlayer.data.maxOxygen)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1276,6 +1372,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             if (Player.localPlayer.data.currentStamina >= 10f)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1309,6 +1407,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (Player.localPlayer.data.currentStamina <= 0)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
@@ -1345,6 +1446,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -1377,6 +1481,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             try
             {
@@ -1411,6 +1518,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -1443,6 +1553,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             try
             {
@@ -1477,6 +1590,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -1509,6 +1625,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             if (Player.localPlayer.data.health <= 10.0f)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
@@ -1547,6 +1666,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             if (Player.localPlayer.data.health <= 30.0f)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1584,6 +1706,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             if (Player.localPlayer.data.health >= Player.PlayerData.maxHealth)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1619,6 +1743,8 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
 
             if (Player.localPlayer.data.health >= Player.PlayerData.maxHealth)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
@@ -1656,6 +1782,8 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
             if (Player.localPlayer.data.health >= Player.PlayerData.maxHealth)
                 return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, message);
 
@@ -1692,6 +1820,9 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
             try
             {
                 TestMod.ActionQueue.Enqueue(() =>
@@ -1699,7 +1830,7 @@ namespace BepinControl
                     try
                     {
                         callFunc(Player.localPlayer, "CallDie", null);
-                        TestMod.comments.Add("Killed by chat?");
+                        TestMod.comments.Add($"I just killed {Player.localPlayer.data.player.name} with Crowd Control!");
                         //Modal.ShowError("CC", msg);
                     }
                     catch (Exception e)
@@ -1723,6 +1854,9 @@ namespace BepinControl
 
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
+
+            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             try
             {
