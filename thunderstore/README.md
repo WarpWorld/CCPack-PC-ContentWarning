@@ -10,7 +10,7 @@ Effect List can be found here: https://crowdcontrol.live/game/ContentWarning/
 
 
 ### Setup
-Our Lethal Company setup guide can be found here: https://crowdcontrol.live/guides/ContentWarning/
+Our Content Warning setup guide can be found here: https://crowdcontrol.live/guides/ContentWarning/
 
 ### Note
 
