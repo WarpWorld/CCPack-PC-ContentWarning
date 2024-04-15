@@ -398,9 +398,11 @@ namespace BepinControl
                     InventorySlot slot;
 
                     PlayerInventory playerInventory;
-                    if (!Player.localPlayer.TryGetInventory(out playerInventory))continue;
+                    if (!p.TryGetInventory(out playerInventory))continue;
 
                     if (!playerInventory.TryGetFeeSlot(out slot)) continue;
+
+                    if (p.data.currentItem != null && p.data.selectedItemSlot == -1) continue;
 
                     list.Add(p);
                 }
@@ -625,6 +627,8 @@ namespace BepinControl
             string message = "";
 
             if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
+            if (Player.localPlayer.data.currentItem != null && Player.localPlayer.data.selectedItemSlot == -1) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
 
             string code = req.code;
             code = code.Split('_')[1];

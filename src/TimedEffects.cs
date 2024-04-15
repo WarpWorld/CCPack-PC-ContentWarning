@@ -29,6 +29,7 @@ namespace BepinControl
     {
         public TimedType type;
         float oldjump;
+        float oldmove;
 
         public Timed(TimedType t) { 
             type = t;
@@ -38,6 +39,18 @@ namespace BepinControl
         {
             switch (type)
             {
+                case TimedType.PLAYER_ULTRA_SLOW:
+                case TimedType.PLAYER_SLOW:
+                case TimedType.PLAYER_FAST:
+                case TimedType.PLAYER_ULTRA_FAST:
+                case TimedType.PLAYER_FREEZE:
+                    {
+                        TestMod.ActionQueue.Enqueue(() =>
+                        {
+                            oldmove = Player.localPlayer.refs.controller.movementForce;
+                        });
+                        break;
+                    }
                 case TimedType.JUMP_LOW:
                     {
                         TestMod.ActionQueue.Enqueue(() =>
@@ -118,7 +131,7 @@ namespace BepinControl
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
-                            Player.localPlayer.refs.controller.movementForce = 10f;
+                            Player.localPlayer.refs.controller.movementForce = oldmove;
                         });
                         break;
                     }

@@ -133,6 +133,22 @@ namespace BepinControl
                 {"giveitem_32", CrowdDelegates.GiveItem},
                 {"giveitem_33", CrowdDelegates.GiveItem},
                 {"giveitem_34", CrowdDelegates.GiveItem},
+                {"giveitem_35", CrowdDelegates.GiveItem},
+                {"giveitem_36", CrowdDelegates.GiveItem},
+                {"giveitem_37", CrowdDelegates.GiveItem},
+                {"giveitem_38", CrowdDelegates.GiveItem},
+                {"giveitem_39", CrowdDelegates.GiveItem},
+                {"giveitem_40", CrowdDelegates.GiveItem},
+                {"giveitem_41", CrowdDelegates.GiveItem},
+                {"giveitem_42", CrowdDelegates.GiveItem},
+                {"giveitem_43", CrowdDelegates.GiveItem},
+                {"giveitem_44", CrowdDelegates.GiveItem},
+                {"giveitem_45", CrowdDelegates.GiveItem},
+                {"giveitem_46", CrowdDelegates.GiveItem},
+                {"giveitem_47", CrowdDelegates.GiveItem},
+                {"giveitem_48", CrowdDelegates.GiveItem},
+                {"giveitem_49", CrowdDelegates.GiveItem},
+
 
                 {"dropitem", CrowdDelegates.DropItem},
                 {"takeitem", CrowdDelegates.TakeItem},
@@ -244,6 +260,12 @@ namespace BepinControl
                 {"cgiveitem_32", CrowdDelegates.GiveCrewItem},
                 {"cgiveitem_33", CrowdDelegates.GiveCrewItem},
                 {"cgiveitem_34", CrowdDelegates.GiveCrewItem},
+                {"cgiveitem_35", CrowdDelegates.GiveCrewItem},
+                {"cgiveitem_36", CrowdDelegates.GiveCrewItem},
+                {"cgiveitem_37", CrowdDelegates.GiveCrewItem},
+                {"cgiveitem_38", CrowdDelegates.GiveCrewItem},
+                {"cgiveitem_39", CrowdDelegates.GiveCrewItem},
+                
 
             };
         }
@@ -395,6 +417,7 @@ namespace BepinControl
                     }
 
                     string code = req.GetReqCode();
+
                     try
                     {
                         CrowdResponse res;
