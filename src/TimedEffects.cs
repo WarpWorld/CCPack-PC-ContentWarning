@@ -1,8 +1,10 @@
 ﻿
+using MyBox;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 
 namespace BepinControl
@@ -31,6 +33,25 @@ namespace BepinControl
         float oldjump;
         float oldmove;
 
+        public static List<(TimedType, string)> msgs = new List<(TimedType, string)>();
+        public static int msgcool = 0;
+
+        public static void msgtick()
+        {
+            if (msgcool > 0) msgcool--;
+            else
+            {
+                if (msgs.Count > 0)
+                {
+                    var msg = msgs[0];
+                    msgs.RemoveAt(0);
+                    HelmetText helmetText = Singleton<HelmetText>.Instance;
+                    helmetText.SetHelmetText($"{msg.Item2}", 1.9f);
+                    msgcool = 180;
+                }
+            }
+        }
+
         public Timed(TimedType t) { 
             type = t;
         }
@@ -39,6 +60,20 @@ namespace BepinControl
         {
             switch (type)
             {
+
+                case TimedType.INF_STAM:
+                    msgs.Add((type, "INFINITE STAMINA"));
+                    break;
+                case TimedType.NO_STAM:
+                    msgs.Add((type, "NO STAMINA"));
+                    break;
+                case TimedType.INVUL:
+                    msgs.Add((type, "INVULNERABLE"));
+                    break;
+                case TimedType.OHKO:
+                    msgs.Add((type, "ONE HIT KO"));
+                    break;
+
                 case TimedType.PLAYER_ULTRA_SLOW:
                 case TimedType.PLAYER_SLOW:
                 case TimedType.PLAYER_FAST:
@@ -55,6 +90,7 @@ namespace BepinControl
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
+                            msgs.Add((type, "LOW JUMP"));
                             oldjump = Player.localPlayer.refs.controller.jumpImpulse;
                             Player.localPlayer.refs.controller.jumpImpulse = oldjump / 3.0f;
                         });
@@ -64,6 +100,7 @@ namespace BepinControl
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
+                            msgs.Add((type, "HIGH JUMP"));
                             oldjump = Player.localPlayer.refs.controller.jumpImpulse;
                             Player.localPlayer.refs.controller.jumpImpulse = oldjump * 4.0f;
                         });
@@ -74,6 +111,7 @@ namespace BepinControl
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
+                            msgs.Add((type, "HIGH JUMP"));
                             oldjump = Player.localPlayer.refs.controller.jumpImpulse;
                             Player.localPlayer.refs.controller.jumpImpulse = oldjump * 8.0f;
                         });
@@ -89,6 +127,9 @@ namespace BepinControl
                         break;
                     }
             }
+
+                
+            
         }
 
         public void removeEffect()

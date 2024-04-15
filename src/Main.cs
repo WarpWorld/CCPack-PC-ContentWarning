@@ -94,6 +94,8 @@ namespace BepinControl
 
             lock (TimedThread.threads)
             {
+                Timed.msgtick();
+
                 foreach (var thread in TimedThread.threads)
                 {
                     if (!thread.paused)
