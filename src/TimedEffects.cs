@@ -140,7 +140,7 @@ namespace BepinControl
                     {
                         TestMod.ActionQueue.Enqueue(() =>
                         {
-                            CrowdDelegates.callFunc(Player.localPlayer, "Heal", new object[] { Player.PlayerData.maxHealth });
+                            Player.localPlayer.CallHeal(Player.PlayerData.maxHealth - 0.01f);
                         });
                         break;
                     }

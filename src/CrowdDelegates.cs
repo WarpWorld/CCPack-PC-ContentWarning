@@ -76,7 +76,11 @@ namespace BepinControl
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     SurfaceNetworkHandler.RoomStats.AddMoney(num);
-                    Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, num>0);
+                    if(num>0)
+                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, MoneyCellUI.MoneyCellType.Revenue);
+                    else
+                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, MoneyCellUI.MoneyCellType.HospitalBill);
+
                     TestMod.SendRoundStats();
                     if(num>0)TestMod.comments.Add("Yo, free money! Thanks Crowd Control!");
                 });
@@ -159,7 +163,11 @@ namespace BepinControl
                 {
                     setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", SurfaceNetworkHandler.RoomStats.CurrentQuota + num);
                     callFunc(SurfaceNetworkHandler.RoomStats, "OnStatsUpdated", null);
-                    Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", num > 0);
+                    if(num>0)
+                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", MoneyCellUI.MoneyCellType.Revenue);
+                    else
+                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", MoneyCellUI.MoneyCellType.HospitalBill);
+
                     TestMod.SendRoundStats();
                     if (num > 0) TestMod.comments.Add("I watched this before it was even uploaded! #CrowdControl");
                 });
@@ -219,7 +227,7 @@ namespace BepinControl
             List<Player> list = new List<Player>();
 
 
-            foreach (Player p in PlayerHandler.instance.playerAlive)
+            foreach (Player p in PlayerHandler.instance.playersAlive)
             {
                 if (p != Player.localPlayer)
                     list.Add(p);
@@ -305,7 +313,7 @@ namespace BepinControl
             Player player = null;
             List<Player> list = new List<Player>();
 
-            foreach (Player p in PlayerHandler.instance.playerAlive)
+            foreach (Player p in PlayerHandler.instance.playersAlive)
             {
                 if (p != Player.localPlayer)
                     list.Add(p);
@@ -332,7 +340,7 @@ namespace BepinControl
             Player player = null;
             List<Player> list = new List<Player>();
 
-            foreach (Player p in PlayerHandler.instance.playerAlive)
+            foreach (Player p in PlayerHandler.instance.playersAlive)
             {
                 if (p != Player.localPlayer)
                     list.Add(p);
@@ -359,7 +367,7 @@ namespace BepinControl
             Player player = null;
             List<Player> list = new List<Player>();
 
-            foreach (Player p in PlayerHandler.instance.playerAlive)
+            foreach (Player p in PlayerHandler.instance.playersAlive)
             {
                 if (p != Player.localPlayer)
                     list.Add(p);
@@ -390,7 +398,7 @@ namespace BepinControl
             Player player = null;
             List<Player> list = new List<Player>();
 
-            foreach (Player p in PlayerHandler.instance.playerAlive)
+            foreach (Player p in PlayerHandler.instance.playersAlive)
             {
                 if (p != Player.localPlayer)
                 {
@@ -595,7 +603,7 @@ namespace BepinControl
             Player player = null;
             List<Player> list = new List<Player>();
 
-            foreach (Player p in PlayerHandler.instance.playerAlive)
+            foreach (Player p in PlayerHandler.instance.playersAlive)
             {
                 if (p != Player.localPlayer && !p.data.dead && !p.data.isInDiveBell)
                     list.Add(p);
@@ -1724,7 +1732,7 @@ namespace BepinControl
                 {
                     try
                     {
-                        callFunc(Player.localPlayer, "Heal", new object[] { 10.0f });
+                        Player.localPlayer.CallHeal(10.0f);
                         TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
@@ -1762,7 +1770,7 @@ namespace BepinControl
                 {
                     try
                     {
-                        callFunc(Player.localPlayer, "Heal", new object[] { 30.0f });
+                        Player.localPlayer.CallHeal(30.0f);
                         TestMod.SendPlayerStats(Player.localPlayer);
 
                         //Modal.ShowError("CC", msg);
@@ -1800,7 +1808,7 @@ namespace BepinControl
                 {
                     try
                     {
-                        callFunc(Player.localPlayer, "Heal", new object[] { Player.PlayerData.maxHealth });
+                        Player.localPlayer.CallHeal(Player.PlayerData.maxHealth - 0.01f);
                         TestMod.SendPlayerStats(Player.localPlayer);
                         TestMod.comments.Add($"Yo, {req.viewer} healing {Player.localPlayer.refs.view.Owner.NickName} with Crowd Control is the goat!");
                         //Modal.ShowError("CC", msg);
