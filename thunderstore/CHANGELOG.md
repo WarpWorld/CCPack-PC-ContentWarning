@@ -1,3 +1,16 @@
+**1.0.5** :
+
+```
+Refactor giveitem effects to an internal dictionary, rather then in game ids
+```
+
+**1.0.4** :
+
+```
+Fixes for the latest version of Content Warning
+```
+
+
 **1.0.2**:
 
 ```
