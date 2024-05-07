@@ -108,7 +108,6 @@ namespace CrowdControl.Games.Packs.ContentWarning
                 new Effect("Give Crewmember Radio",            "cgiveitem_radio"   ) { Category = "Items"},
                 new Effect("Give Crewmember Skull",            "cgiveitem_skull"   ) { Category = "Items"},
 
-
                 /*
                 new Effect("Give Item 0", "giveitem_0") { Category = "Items"},
                 new Effect("Give Item 1", "giveitem_1") { Category = "Items"},

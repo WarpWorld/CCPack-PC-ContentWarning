@@ -393,7 +393,7 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
 
-            byte id = byte.Parse(code);
+            byte id = items[code];
 
             Player player = null;
             List<Player> list = new List<Player>();
@@ -628,6 +628,25 @@ namespace BepinControl
             return new CrowdResponse(req.GetReqID(), status, message);
         }
 
+        private static readonly Dictionary<string, byte> items = new Dictionary<string, byte>()
+        {
+            { "mic"    , 0 },
+            { "camera" , 1 },
+            { "clapper", 3 },
+            { "defib"  , 4 },
+            { "flare"  , 7 },
+            { "gooball", 8 },
+            { "hugger" , 10 },
+            { "light"  , 12 },
+            { "party"  , 17 },
+            { "shock"  , 20 },
+            { "sound"  , 21 },
+            { "chorby" , 32 },
+            { "brain"  , 31 },
+            { "radio"  , 35 },
+            { "skull"  , 39 },
+        };
+
         public static CrowdResponse GiveItem(ControlClient client, CrowdRequest req)
         {
 
@@ -641,7 +660,7 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
 
-            byte id = byte.Parse(code);
+            byte id = items[code];
 
             try
             {
