@@ -386,8 +386,9 @@ namespace BepinControl
 
             string code = req.code;
             code = code.Split('_')[1];
-
-            byte id = items[code];
+            byte id = 0;
+            Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
+            id = Requested.id;
 
             Player player = null;
             List<Player> list = new List<Player>();
@@ -654,15 +655,8 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
             byte id = 0;
-            try
-            {
-                Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
-                id = Requested.id;
-            }
-            catch
-            {
-                TestMod.mls.LogInfo("Failed to find Item ID");
-            }
+            Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
+            id = Requested.id;
 
             try
             {
