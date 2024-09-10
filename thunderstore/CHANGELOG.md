@@ -1,3 +1,10 @@
+**1.0.6** :
+
+```
+Fixes for items in latest version of game.
+```
+
+
 **1.0.5** :
 
 ```
