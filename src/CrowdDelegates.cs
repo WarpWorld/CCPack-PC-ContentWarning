@@ -1,16 +1,10 @@
-﻿using DefaultNamespace;
-using DG.Tweening;
-using Lean.Pool;
-using MyBox;
-using Newtonsoft.Json.Linq;
+﻿using MyBox;
 using Photon.Pun;
-using Steamworks.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Xml.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -77,9 +71,9 @@ namespace BepinControl
                 {
                     SurfaceNetworkHandler.RoomStats.AddMoney(num);
                     if(num>0)
-                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, MoneyCellUI.MoneyCellType.Revenue);
+                        MyBox.Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, MoneyCellUI.MoneyCellType.Revenue);
                     else
-                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, MoneyCellUI.MoneyCellType.HospitalBill);
+                        MyBox.Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", "$" + num, MoneyCellUI.MoneyCellType.HospitalBill);
 
                     TestMod.SendRoundStats();
                     if(num>0)TestMod.comments.Add("Yo, free money! Thanks Crowd Control!");
@@ -392,8 +386,9 @@ namespace BepinControl
 
             string code = req.code;
             code = code.Split('_')[1];
-
-            byte id = items[code];
+            byte id = 0;
+            Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
+            id = Requested.id;
 
             Player player = null;
             List<Player> list = new List<Player>();
@@ -548,6 +543,8 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
 
+
+
             if (code == "Whisk") code = "Toolkit_Wisk";
 
             try
@@ -647,9 +644,9 @@ namespace BepinControl
             { "skull"  , 39 },
         };
 
+        
         public static CrowdResponse GiveItem(ControlClient client, CrowdRequest req)
         {
-
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
@@ -659,8 +656,9 @@ namespace BepinControl
 
             string code = req.code;
             code = code.Split('_')[1];
-
-            byte id = items[code];
+            byte id = 0;
+            Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
+            id = Requested.id;
 
             try
             {
