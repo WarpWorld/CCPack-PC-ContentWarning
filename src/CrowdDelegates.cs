@@ -543,6 +543,8 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
 
+
+
             if (code == "Whisk") code = "Toolkit_Wisk";
 
             try
