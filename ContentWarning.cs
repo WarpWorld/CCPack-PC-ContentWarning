@@ -16,7 +16,7 @@ public class ContentWarning : SimpleTCPPack<SimpleTCPServerConnector>
 
     public override Game Game { get; } = new("Content Warning", "ContentWarning", "PC", ConnectorType.SimpleTCPServerConnector);
 
-    public override EffectList Effects => new List<Effect>
+    public override EffectList Effects { get; } = new List<Effect>
     {
         new Effect("Damage Player 10%", "damage") { Category = "Health"},
         new Effect("Damage Player 30%", "damageb") { Category = "Health"},
