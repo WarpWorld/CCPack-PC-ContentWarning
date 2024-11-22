@@ -209,5 +209,8 @@ public class ContentWarning : SimpleTCPPack<SimpleTCPServerConnector>
 
         new Effect("Open Dive Bell", "opendoor"),
         new Effect("Close Dive Bell", "closedoor"),
+
+        new("Hype Effect", "event-hype-train")
+
     };
 }

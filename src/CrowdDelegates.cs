@@ -1,4 +1,6 @@
-﻿using MyBox;
+﻿using BepInEx;
+using MyBox;
+using Newtonsoft.Json;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,232 @@ namespace BepinControl
     public class CrowdDelegates
     {
         public static System.Random rnd = new System.Random();
+
+
+
+        public AssetBundle bundle; // Make sure this is assigned when the plugin loads
+
+        private static GameObject hypetrainPrefab;
+
+
+        // Static flag to ensure assets are loaded only once
+        private static bool loaded = false;
+
+        // Load all assets from the bundle and store them
+        public void LoadAssetsFromBundle()
+        {
+            if (loaded) return; // Only load once
+
+            //TestMod.mls.LogDebug("PATH " + System.IO.Path.Combine(Paths.PluginPath, "CrowdControl", "food"));
+
+
+
+
+
+            HypeTrainBoxData boxData = new HypeTrainBoxData();// Do this to load the dll... maybe do something different, but this works for now
+            bundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Paths.PluginPath, "warpworld.hypetrain"));
+            if (bundle == null)
+            {
+                Debug.LogError("Failed to load AssetBundle.");
+                return;
+            }
+
+            hypetrainPrefab = bundle.LoadAsset<GameObject>("HypeTrain");
+
+            if (hypetrainPrefab == null)
+            {
+                Debug.LogError("hypetrain prefab not found in AssetBundle.");
+            }
+
+            loaded = true;
+        }
+
+        public static Color ConvertUserNameToColor(string userName)
+        {
+
+            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            {
+                byte[] hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(userName));
+
+                float r = hashBytes[0] / 255f;
+                float g = hashBytes[1] / 255f;
+                float b = hashBytes[2] / 255f;
+
+                return new Color(r, g, b);
+            }
+        }
+
+        public void Spawn_HypeTrain(Quaternion rotation, CrowdRequest.SourceDetails sourceDetails)
+        {
+            if (hypetrainPrefab != null)
+            {
+                /*for (int i = 0; i < 32; ++i)
+                {
+                    try
+                    {
+                        Debug.Log($"Layer {i} is: {LayerMask.LayerToName(i)}");
+						for (int j = 0; j < 32; ++j)
+						{
+							try
+							{
+                                if (i != j)
+                                {
+                                    Debug.Log($"Collide with  {LayerMask.LayerToName(j)}: {Physics.GetIgnoreLayerCollision(i, j)}");
+                                }
+							}
+							catch { }
+						}
+					}
+                    catch { }
+                }*/
+
+                HypeTrain hypeTrain = UnityEngine.Object.Instantiate(hypetrainPrefab, MainCamera.instance.transform.position, rotation).GetComponent<HypeTrain>();
+                if (null == hypeTrain)
+                {
+                    Debug.LogError("No Train?");
+                }
+                else
+                {
+                    Vector3 initialStartOffset = new Vector3(-14.5f, 0.2f, 6.0f); // Further away by 2 units
+                    Vector3 initialStopOffset = new Vector3(14.5f, 0.2f, 6.0f); // Further away by 2 units
+
+                   
+                    Transform playerCamera = Camera.main?.transform;
+
+                    if (playerCamera == null)
+                    {
+                        playerCamera = UnityEngine.Object.FindObjectOfType<Camera>()?.transform;
+                        if (playerCamera == null)
+                        {
+                            return;
+                        }
+                    }
+
+                    Player player = Player.localPlayer; // Or however you obtain the Player instance
+                    var playerData = player.data;
+                    Vector3 lastPosition = playerData.lastSimplifiedPosition;
+
+                    if (player != null)
+                    {
+                        // Access the PlayerData object
+
+                        if (playerData != null)
+                        {
+                            // Access the lastSimplifiedPosition
+                            lastPosition = playerData.lastSimplifiedPosition;
+                            TestMod.mls.LogInfo($"Player's last simplified position: {lastPosition}");
+                        }
+                        else
+                        {
+                            TestMod.mls.LogInfo("Player data is null.");
+                        }
+                    }
+                    else
+                    {
+                        TestMod.mls.LogInfo("Player instance is null.");
+                    }
+
+
+
+                    Vector3 startPos = lastPosition + playerCamera.TransformDirection(initialStartOffset);
+                    Vector3 stopPos = lastPosition + playerCamera.TransformDirection(initialStopOffset);
+
+
+
+                    List<HypeTrainBoxData> hypeTrainBoxDataList = new List<HypeTrainBoxData>();
+
+                    foreach (var contribution in sourceDetails.top_contributions)
+                    {
+                        hypeTrainBoxDataList.Add(new HypeTrainBoxData()
+                        {
+                            name = contribution.user_name,
+                            box_color = ConvertUserNameToColor(contribution.user_name),
+                            bit_amount = contribution.type == "bits" ? contribution.total : 0 // Only set bit_amount if the contribution is bits
+                        });
+                    }
+
+                    bool isLastContributionInTop = sourceDetails.top_contributions.Any(contribution => contribution.user_id == sourceDetails.last_contribution.user_id);
+
+                    // Only add last train car if the last_contribution user_id is not in top_contributions
+                    if (!isLastContributionInTop)
+                    {
+                        hypeTrainBoxDataList.Add(new HypeTrainBoxData()
+                        {
+                            name = sourceDetails.last_contribution.user_name,
+                            box_color = ConvertUserNameToColor(sourceDetails.last_contribution.user_name),
+                            bit_amount = sourceDetails.last_contribution.type == "bits" ? sourceDetails.last_contribution.total : 0
+                        });
+                    }
+
+                    float defaultSpeed = 1f;
+                    float speedIncrease = sourceDetails.level * 0.1f;
+                    float distance_per_second = Mathf.Min(defaultSpeed + speedIncrease, 10f);
+
+
+
+                    try
+                    {
+                        hypeTrain.StartHypeTrain(startPos, stopPos, hypeTrainBoxDataList.ToArray(), MainCamera.instance.transform,
+                            new HypeTrainOptions()
+                            {
+                                max_bits_per_car = 100,
+                                distance_per_second = distance_per_second
+                            });
+                    }
+                    catch (Exception ex)
+                    {
+                        TestMod.mls.LogError($"Error starting HypeTrain: {ex}");
+                    }
+
+
+                }
+            }
+
+        }
+
+
+
+
+
+
+        public static CrowdResponse SpawnHypeTrain(ControlClient client, CrowdRequest req)
+        {
+            CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
+            string message = "";
+
+
+            Vector3 position = Player.localPlayer.transform.position;
+
+            Quaternion rotation = Player.localPlayer.transform.rotation;
+            
+            
+            Transform playerCamera = Camera.main?.transform ?? UnityEngine.Object.FindObjectOfType<Camera>()?.transform;
+            Vector3 forwardDirection = playerCamera.forward;
+
+            if (!playerCamera) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Unable to spawn item.");
+
+
+            TestMod.ActionQueue.Enqueue(() =>
+            {
+
+                CrowdDelegates crowdDelegatesInstance = new CrowdDelegates();
+
+                crowdDelegatesInstance.LoadAssetsFromBundle();
+
+
+               
+                        TestMod.mls.LogInfo($"req.sourceDetails: {req.sourceDetails}");
+                        crowdDelegatesInstance.Spawn_HypeTrain(Quaternion.identity, req.sourceDetails);
+                    
+                
+
+
+
+            });
+
+            return new CrowdResponse(req.GetReqID(), status, message);
+        }
+
 
 
         public static CrowdResponse Money100(ControlClient client, CrowdRequest req)

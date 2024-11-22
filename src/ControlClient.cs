@@ -206,7 +206,9 @@ namespace BepinControl
 
                 {"killcrew", CrowdDelegates.KillCrew},
 
-                
+                {"event-hype-train", CrowdDelegates.SpawnHypeTrain }
+
+
 
             };
         }
