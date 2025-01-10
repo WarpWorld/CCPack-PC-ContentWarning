@@ -10,6 +10,7 @@ using System.Threading;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zorro.Core;
 
 namespace BepinControl
 {
@@ -40,8 +41,8 @@ namespace BepinControl
 
 
 
-            HypeTrainBoxData boxData = new HypeTrainBoxData();// Do this to load the dll... maybe do something different, but this works for now
-            bundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Paths.PluginPath, "warpworld.hypetrain"));
+            //HypeTrainBoxData boxData = new HypeTrainBoxData();// Do this to load the dll... maybe do something different, but this works for now
+            /*bundle = AssetBundle.LoadFromFile(System.IO.Path.Combine(Paths.PluginPath, "warpworld.hypetrain"));
             if (bundle == null)
             {
                 Debug.LogError("Failed to load AssetBundle.");
@@ -54,7 +55,7 @@ namespace BepinControl
             {
                 Debug.LogError("hypetrain prefab not found in AssetBundle.");
             }
-
+            */
             loaded = true;
         }
 
@@ -97,7 +98,7 @@ namespace BepinControl
                     catch { }
                 }*/
 
-                HypeTrain hypeTrain = UnityEngine.Object.Instantiate(hypetrainPrefab, MainCamera.instance.transform.position, rotation).GetComponent<HypeTrain>();
+                /*HypeTrain hypeTrain = UnityEngine.Object.Instantiate(hypetrainPrefab, MainCamera.instance.transform.position, rotation).GetComponent<HypeTrain>();
                 if (null == hypeTrain)
                 {
                     Debug.LogError("No Train?");
@@ -197,6 +198,7 @@ namespace BepinControl
 
 
                 }
+                                */
             }
 
         }
@@ -386,9 +388,9 @@ namespace BepinControl
                     setProperty(SurfaceNetworkHandler.RoomStats, "currentQuoutaInternal", SurfaceNetworkHandler.RoomStats.CurrentQuota + num);
                     callFunc(SurfaceNetworkHandler.RoomStats, "OnStatsUpdated", null);
                     if(num>0)
-                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", MoneyCellUI.MoneyCellType.Revenue);
+                        MyBox.Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", MoneyCellUI.MoneyCellType.Revenue);
                     else
-                        Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", MoneyCellUI.MoneyCellType.HospitalBill);
+                        MyBox.Singleton<UserInterface>.Instance.moneyAddedUI.Show("Crowd Control", num + "0 Views", MoneyCellUI.MoneyCellType.HospitalBill);
 
                     TestMod.SendRoundStats();
                     if (num > 0) TestMod.comments.Add("I watched this before it was even uploaded! #CrowdControl");
@@ -467,8 +469,11 @@ namespace BepinControl
                 {
                     try
                     {
-                        callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.data.groundPos - Player.localPlayer.data.groundPos);
- 
+                        //callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.data.groundPos - Player.localPlayer.data.groundPos);
+
+                        callFunc(Player.localPlayer, "Teleport", new object[] { player.data.groundPos, Player.localPlayer.refs.rigRoot.transform.forward });
+
+
                     }
                     catch (Exception e)
                     {
@@ -493,7 +498,7 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
+            //if (SceneManager.GetActiveScene().name == "SurfaceScene") return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is not in the old world.");
 
             try
             {
@@ -504,8 +509,11 @@ namespace BepinControl
                     try
                     {
                         Transform spawnPoint = (Transform)CrowdDelegates.callAndReturnFunc(SpawnHandler.Instance, "GetSpawnPoint", Spawns.DiveBell);
-                        callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", spawnPoint.position - Player.localPlayer.data.groundPos);
- 
+                        //callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", spawnPoint.position - Player.localPlayer.data.groundPos);
+
+                        callFunc(Player.localPlayer, "Teleport", new object[] { spawnPoint.position , Player.localPlayer.refs.rigRoot.transform.forward});
+
+                        
                     }
                     catch (Exception e)
                     {
@@ -615,7 +623,32 @@ namespace BepinControl
             string code = req.code;
             code = code.Split('_')[1];
             byte id = 0;
-            Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
+            Item Requested = null;
+
+            for (byte i = 0; i < 256; i++)
+            {
+                Item item;
+                if (ItemDatabase.TryGetItemFromID(i, out item))
+                {
+
+                    if (item.name.ToLower().Contains(code))
+                    {
+                        Requested = item;
+                        break;
+                    }
+
+                    //TestMod.mls.LogError($"item {i}: {item.name}");
+
+                }
+            }
+
+
+
+            if (Requested == null)
+            {
+                return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+            }
+
             id = Requested.id;
 
             Player player = null;
@@ -877,16 +910,53 @@ namespace BepinControl
         {
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
-
-            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
-
-            if (Player.localPlayer.data.currentItem != null && Player.localPlayer.data.selectedItemSlot == -1) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
-
-            string code = req.code;
-            code = code.Split('_')[1];
             byte id = 0;
-            Item Requested = ItemDatabase.Instance.Objects.ToList().Find(x => x.name.ToLower().Contains(code));
-            id = Requested.id;
+            Item Requested;
+
+
+            try
+            {
+                Requested = null;
+                Item item;
+
+
+
+
+                if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+
+                if (Player.localPlayer.data.currentItem != null && Player.localPlayer.data.selectedItemSlot == -1) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+                string code = req.code;
+                code = code.Split('_')[1];
+
+                for (byte i = 0; i < 256; i++)
+                {
+                    if (ItemDatabase.TryGetItemFromID(i, out item))
+                    {
+
+                        if (item.name.ToLower().Contains(code))
+                        {
+                            Requested = item;
+                            break;
+                        }
+
+                        //TestMod.mls.LogError($"item {i}: {item.name}");
+
+                    }
+                }
+
+
+                if (Requested == null)
+                {
+                    return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+                }
+
+                id = Requested.id;
+            }
+            catch (Exception e)
+            {
+                TestMod.mls.LogInfo($"Crowd Control Error: {e.ToString()}");
+            }
 
             try
             {
@@ -1850,11 +1920,14 @@ namespace BepinControl
             CrowdResponse.Status status = CrowdResponse.Status.STATUS_SUCCESS;
             string message = "";
 
-            if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
-            if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
+            TestMod.mls.LogInfo($"launch called");
 
             try
             {
+                if (Player.localPlayer.data.dead) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, "Player is dead.");
+                if (Player.localPlayer.data.isInDiveBell) return new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY, "");
+
                 TestMod.ActionQueue.Enqueue(() =>
                 {
                     try

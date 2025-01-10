@@ -51,9 +51,6 @@
     <Reference Include="Facepunch.Steamworks.Win64">
       <HintPath>D:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Facepunch.Steamworks.Win64.dll</HintPath>
     </Reference>
-    <Reference Include="HypeTrain">
-      <HintPath>C:\Users\jakub\AppData\Roaming\CrowdControl-Apps\Mods\ContentWarning\BepInEx\plugins\HypeTrain.dll</HintPath>
-    </Reference>
     <Reference Include="LeanPool, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>resources\LeanPool.dll</HintPath>

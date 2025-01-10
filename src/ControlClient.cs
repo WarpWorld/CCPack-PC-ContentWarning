@@ -39,7 +39,7 @@ namespace BepinControl
         private Dictionary<string, CrowdDelegate> Delegate { get; set; }
         private IPEndPoint Endpoint { get; set; }
         private Queue<CrowdRequest> Requests { get; set; }
-        private bool Running { get; set; }
+        private static bool Running { get; set; }
 
         private bool paused = false;
         public static Socket Socket { get; set; }
@@ -281,12 +281,15 @@ namespace BepinControl
                     CrowdRequest req = CrowdRequest.Recieve(this, Socket);
                     if (req == null || req.IsKeepAlive()) continue;
 
+                   
                     lock (Requests)
                         Requests.Enqueue(req);
+
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TestMod.mls.LogInfo($"{e.ToString()}");
                 TestMod.mls.LogInfo("Disconnected from Crowd Control");
                 Socket.Close();
             }
@@ -346,6 +349,7 @@ namespace BepinControl
         public void RequestLoop()
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
             while (Running)
             {
                 try
@@ -360,6 +364,7 @@ namespace BepinControl
                     }
 
                     string code = req.GetReqCode();
+
 
                     try
                     {
@@ -380,8 +385,9 @@ namespace BepinControl
                         new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, $"Request error for '{code}'").Send(Socket);
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    TestMod.mls.LogError(e.ToString());
                     TestMod.mls.LogInfo("Disconnected from Crowd Control");
                     Socket.Close();
                 }

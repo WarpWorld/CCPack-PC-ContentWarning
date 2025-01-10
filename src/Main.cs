@@ -48,7 +48,7 @@ namespace BepinControl
         public static ManualLogSource mls;
 
         internal static TestMod Instance = null;
-        private ControlClient client = null;
+        private static ControlClient client = null;
 
         public static RoundSpawner spawner = null;
         public static List<IBudgetCost> spawns = new List<IBudgetCost>();
@@ -65,27 +65,33 @@ namespace BepinControl
             mls.LogInfo($"Loaded {modGUID}. Patching.");
             harmony.PatchAll(typeof(TestMod));
 
-            mls.LogInfo($"Initializing Crowd Control");
-
-            try
-            {
-                client = new ControlClient();
-                new Thread(new ThreadStart(client.NetworkLoop)).Start();
-                new Thread(new ThreadStart(client.RequestLoop)).Start();
-            }
-            catch (Exception e)
-            {
-                mls.LogInfo($"CC Init Error: {e.ToString()}");
-            }
-
-            mls.LogInfo($"Crowd Control Initialized");
-
 
             mls = Logger;
         }
         
         void Update()
         {
+            
+        }
+        
+        public static void gameTick()
+        {
+            if (Player.localPlayer == null)
+            {
+                if (callback)
+                {
+                    PhotonNetwork.RemoveCallbackTarget((object)TestMod.Instance);
+                    callback = false;
+
+                    mls.LogInfo($"Crowd Control Shut Down");
+
+                    client.Stop();
+                    client = null;
+                }
+                return;
+            }
+
+
             if (ActionQueue.Count > 0)
             {
                 Action action = ActionQueue.Dequeue();
@@ -183,6 +189,7 @@ namespace BepinControl
 
         }
 
+
         public void OnEvent(EventData photonEvent)
         {
             Player player;
@@ -229,7 +236,9 @@ namespace BepinControl
                                 player = PlayerHandler.instance.players[i];
                                 if (player.refs.view.ViewID == (int)array[2])
                                 {
-                                    CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.data.groundPos - Player.localPlayer.data.groundPos);
+                                    //CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", player.data.groundPos - Player.localPlayer.data.groundPos);
+                                    CrowdDelegates.callFunc(Player.localPlayer, "Teleport", new object[] { player.data.groundPos, Player.localPlayer.refs.rigRoot.transform.forward });
+
                                     break;
                                 }
                             }
@@ -240,8 +249,10 @@ namespace BepinControl
 
                             Transform spawnPoint = (Transform)CrowdDelegates.callAndReturnFunc(SpawnHandler.Instance, "GetSpawnPoint", Spawns.DiveBell);
 
-                            CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", spawnPoint.position - Player.localPlayer.data.groundPos);
- 
+                            //CrowdDelegates.callFunc(Player.localPlayer.refs.ragdoll, "MoveAllRigsInDirection", spawnPoint.position - Player.localPlayer.data.groundPos);
+                            CrowdDelegates.callFunc(Player.localPlayer, "Teleport", new object[] { spawnPoint.position, Player.localPlayer.refs.rigRoot.transform.forward });
+
+
                             break;
                         case "kill":
 
@@ -310,13 +321,21 @@ namespace BepinControl
             }
             catch (Exception e)
             {
-
+                mls.LogError(e.ToString());
             }
         }
 
         private void OnEnable()
         {
-            PhotonNetwork.AddCallbackTarget((object)this);
+            try
+            {
+//                mls.LogError("Registering Callback");
+//                PhotonNetwork.AddCallbackTarget((object)this);
+            }
+            catch(Exception e)
+            {
+                mls.LogError(e.ToString());
+            }
         }
 
         private void OnDisable()
@@ -324,7 +343,7 @@ namespace BepinControl
             PhotonNetwork.RemoveCallbackTarget((object)this);
         }
 
-
+        public static bool callback = false;
         public static Queue<Action> ActionQueue = new Queue<Action>();
 
         //attach this to some game class with a function that runs every frame like the player's Update()
@@ -332,7 +351,32 @@ namespace BepinControl
         [HarmonyPrefix]
         static void RunEffects()
         {
+            if (!callback)
+            {
+                mls.LogError("Registering Callback");
+                PhotonNetwork.AddCallbackTarget((object)TestMod.Instance);
 
+                try
+                {
+                    mls.LogInfo($"Initializing Crowd Control");
+
+                    client = new ControlClient();
+                    
+                    new Thread(new ThreadStart(client.NetworkLoop)).Start();
+                    new Thread(new ThreadStart(client.RequestLoop)).Start();
+
+                    callback = true;
+
+                    mls.LogInfo($"Crowd Control Initialized");
+                }
+                catch (Exception e)
+                {
+                    mls.LogInfo($"CC Init Error: {e.ToString()}");
+                }
+
+            }
+
+            gameTick();
 
         }
 
