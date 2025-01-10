@@ -1,3 +1,10 @@
+**1.0.7** :
+
+```
+Fix for latest build of Content Warning wh ich prevented users from being able to host a game.
+```
+
+
 **1.0.6** :
 
 ```
