@@ -1,3 +1,10 @@
+**1.1.0** :
+
+```
+Fixes for spawn and teammate effects!
+```
+
+
 **1.0.7** :
 
 ```
