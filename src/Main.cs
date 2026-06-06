@@ -41,7 +41,7 @@ namespace BepinControl
         // Mod Details
         private const string modGUID = "WarpWorld.CrowdControl";
         private const string modName = "Crowd Control";
-        private const string modVersion = "1.0.6.0";
+        private const string modVersion = "1.0.7.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 
@@ -68,6 +68,18 @@ namespace BepinControl
 
             mls = Logger;
         }
+
+        void OnApplicationQuit()
+        {
+            try
+            {
+                client?.Stop();
+            }
+            catch (Exception ex)
+            {
+                mls?.LogError($"Error during application quit: {ex}");
+            }
+        }
         
         void Update()
         {
@@ -85,12 +97,14 @@ namespace BepinControl
 
                     mls.LogInfo($"Crowd Control Shut Down");
 
-                    client.Stop();
+                    client?.Stop();
                     client = null;
                 }
                 return;
             }
 
+
+            ControlClient.UpdateReadyState();
 
             if (ActionQueue.Count > 0)
             {
@@ -361,9 +375,9 @@ namespace BepinControl
                     mls.LogInfo($"Initializing Crowd Control");
 
                     client = new ControlClient();
-                    
-                    new Thread(new ThreadStart(client.NetworkLoop)).Start();
-                    new Thread(new ThreadStart(client.RequestLoop)).Start();
+
+                    new Thread(new ThreadStart(client.NetworkLoop)) { IsBackground = true, Name = "CrowdControl-Network" }.Start();
+                    new Thread(new ThreadStart(client.RequestLoop)) { IsBackground = true, Name = "CrowdControl-Request" }.Start();
 
                     callback = true;
 

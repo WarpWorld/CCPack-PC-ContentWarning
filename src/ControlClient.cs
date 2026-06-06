@@ -35,6 +35,11 @@ namespace BepinControl
     {
         public static readonly string CV_HOST = "127.0.0.1";
         public static readonly int CV_PORT = 51337;
+        public static readonly object SocketSendLock = new object();
+
+        private static ControlClient activeClient;
+        private static volatile bool gameReady;
+        public static bool GameReady => gameReady;
 
         private Dictionary<string, CrowdDelegate> Delegate { get; set; }
         private IPEndPoint Endpoint { get; set; }
@@ -44,10 +49,14 @@ namespace BepinControl
         private bool paused = false;
         public static Socket Socket { get; set; }
 
+        private volatile bool keepAliveRunning;
+        private Thread keepAliveThread;
+
         public bool inGame = true;
 
         public ControlClient()
         {
+            activeClient = this;
             Endpoint = new IPEndPoint(IPAddress.Parse(CV_HOST), CV_PORT);
             Requests = new Queue<CrowdRequest>();
             Running = true;
@@ -235,6 +244,11 @@ namespace BepinControl
             return true;
         }
 
+        public static void UpdateReadyState()
+        {
+            gameReady = activeClient != null && activeClient.isReady();
+        }
+
         public static void HideEffect(string code)
         {
             CrowdResponse res = new CrowdResponse(0, CrowdResponse.Status.STATUS_NOTVISIBLE);
@@ -267,39 +281,114 @@ namespace BepinControl
             res.Send(Socket);
         }
 
+        private void StartKeepAliveLoop()
+        {
+            keepAliveRunning = true;
+            keepAliveThread = new Thread(KeepAliveLoop)
+            {
+                IsBackground = true,
+                Name = "CrowdControl-KeepAlive"
+            };
+            keepAliveThread.Start();
+        }
+
+        private void StopKeepAliveLoop()
+        {
+            keepAliveRunning = false;
+        }
+
+        private void KeepAliveLoop()
+        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+            while (keepAliveRunning && Running)
+            {
+                try
+                {
+                    Socket socket = Socket;
+                    if (socket != null && socket.Connected)
+                        CrowdResponse.KeepAlive(socket);
+                }
+                catch {/**/}
+
+                Thread.Sleep(1000);
+            }
+        }
+
+        private static void CloseSocket()
+        {
+            lock (SocketSendLock)
+            {
+                try
+                {
+                    if (Socket == null)
+                        return;
+
+                    if (Socket.Connected)
+                    {
+                        Socket.Shutdown(SocketShutdown.Both);
+                        Socket.Close();
+                    }
+
+                    Socket.Dispose();
+                }
+                catch {/**/}
+                finally
+                {
+                    Socket = null;
+                }
+            }
+        }
+
         private void ClientLoop()
         {
-
             TestMod.mls.LogInfo("Connected to Crowd Control");
 
             var timer = new Timer(timeUpdate, null, 0, 200);
+            StartKeepAliveLoop();
 
             try
             {
                 while (Running)
                 {
                     CrowdRequest req = CrowdRequest.Recieve(this, Socket);
-                    if (req == null || req.IsKeepAlive()) continue;
+                    if (req == null)
+                    {
+                        if (Socket == null || !Socket.Connected)
+                            break;
 
-                   
+                        Thread.Sleep(5);
+                        continue;
+                    }
+
+                    if (req.IsKeepAlive())
+                        continue;
+
                     lock (Requests)
                         Requests.Enqueue(req);
-
                 }
             }
             catch (Exception e)
             {
-                TestMod.mls.LogInfo($"{e.ToString()}");
+                if (Running)
+                    TestMod.mls.LogInfo($"Disconnected from Crowd Control: {e.GetType().Name}");
+            }
+            finally
+            {
                 TestMod.mls.LogInfo("Disconnected from Crowd Control");
-                Socket.Close();
+                gameReady = false;
+                StopKeepAliveLoop();
+
+                try { timer.Dispose(); }
+                catch {/**/}
+
+                CloseSocket();
             }
         }
 
         public void timeUpdate(System.Object state)
         {
-            inGame = true;
-
-            if(!isReady()) inGame = false;
+            inGame = GameReady;
 
             if (!inGame)
             {
@@ -323,7 +412,6 @@ namespace BepinControl
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             while (Running)
             {
-                
                 TestMod.mls.LogInfo("Attempting to connect to Crowd Control");
 
                 try
@@ -334,13 +422,26 @@ namespace BepinControl
                         ClientLoop();
                     else
                         TestMod.mls.LogInfo("Failed to connect to Crowd Control");
-                    Socket.Close();
+
+                    CloseSocket();
                 }
                 catch (Exception e)
                 {
-                    TestMod.mls.LogInfo(e.GetType().Name);
-                    TestMod.mls.LogInfo("Failed to connect to Crowd Control");
+                    if (Running)
+                    {
+                        TestMod.mls.LogInfo($"{e.GetType().Name}: {e.Message}");
+                        TestMod.mls.LogInfo("Failed to connect to Crowd Control");
+                    }
+                    else
+                    {
+                        TestMod.mls.LogInfo($"Crowd Control network loop ended during shutdown: {e.GetType().Name}");
+                    }
+
+                    CloseSocket();
                 }
+
+                if (!Running)
+                    break;
 
                 Thread.Sleep(10000);
             }
@@ -359,23 +460,28 @@ namespace BepinControl
                     lock (Requests)
                     {
                         if (Requests.Count == 0)
+                        {
+                            Thread.Sleep(5);
                             continue;
+                        }
+
                         req = Requests.Dequeue();
                     }
 
                     string code = req.GetReqCode();
 
-
                     try
                     {
                         CrowdResponse res;
-                        if (!isReady())
+                        if (!GameReady)
                             res = new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_RETRY);
                         else
                             res = Delegate[code](this, req);
+
                         if (res == null)
                         {
                             new CrowdResponse(req.GetReqID(), CrowdResponse.Status.STATUS_FAILURE, $"Request error for '{code}'").Send(Socket);
+                            continue;
                         }
 
                         res.Send(Socket);
@@ -387,9 +493,13 @@ namespace BepinControl
                 }
                 catch (Exception e)
                 {
-                    TestMod.mls.LogError(e.ToString());
-                    TestMod.mls.LogInfo("Disconnected from Crowd Control");
-                    Socket.Close();
+                    if (Running)
+                    {
+                        TestMod.mls.LogError(e.ToString());
+                        TestMod.mls.LogInfo("Disconnected from Crowd Control");
+                    }
+
+                    CloseSocket();
                 }
             }
         }
@@ -397,6 +507,10 @@ namespace BepinControl
         public void Stop()
         {
             Running = false;
+            gameReady = false;
+            activeClient = null;
+            StopKeepAliveLoop();
+            CloseSocket();
         }
 
     }
