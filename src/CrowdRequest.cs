@@ -89,6 +89,11 @@ namespace BepinControl
             return id == 0 && type == "255";
         }
 
+        public bool IsGameState()
+        {
+            return type == "253";
+        }
+
         public class Target
         {
             public string service; // E.g., Twitch, YouTube, etc.

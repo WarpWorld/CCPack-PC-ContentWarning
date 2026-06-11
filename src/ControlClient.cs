@@ -249,6 +249,13 @@ namespace BepinControl
             gameReady = activeClient != null && activeClient.isReady();
         }
 
+        public static int GetGameState()
+        {
+            if (activeClient != null && activeClient.isReady())
+                return (int)CrowdResponse.GameState.Ready;
+            return (int)CrowdResponse.GameState.BadPlayerState;
+        }
+
         public static void HideEffect(string code)
         {
             CrowdResponse res = new CrowdResponse(0, CrowdResponse.Status.STATUS_NOTVISIBLE);
@@ -363,6 +370,12 @@ namespace BepinControl
 
                     if (req.IsKeepAlive())
                         continue;
+
+                    if (req.IsGameState())
+                    {
+                        new GameStateResponse(req.id, GetGameState()).Send(Socket);
+                        continue;
+                    }
 
                     lock (Requests)
                         Requests.Enqueue(req);

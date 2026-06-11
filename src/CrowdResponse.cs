@@ -23,7 +23,19 @@ namespace BepinControl
             STATUS_SELECTABLE = 0x82,
             STATUS_NOTSELECTABLE = 0x83,
 
+            STATUS_GAMEUPDATE = 253,
             STATUS_KEEPALIVE = 255
+        }
+
+        public enum GameState
+        {
+            Unknown = 0,
+            Ready = 1,
+            Loading = -6,
+            Paused = -7,
+            WrongMode = -8,
+            BadPlayerState = -12,
+            Menu = -13,
         }
 
         public int id;
@@ -31,11 +43,13 @@ namespace BepinControl
         public string code;
         public int status;
         public int type;
+        public int state;
 
         public CrowdResponse(int id, Status status = Status.STATUS_SUCCESS, string message = "")
         {
             this.type = 0;
             code = "";
+            state = 0;
             this.id = id;
             this.message = message;
             this.status = (int)status;
@@ -61,6 +75,15 @@ namespace BepinControl
                 if (socket.Connected)
                     socket.Send(outData);
             }
+        }
+    }
+
+    public class GameStateResponse : CrowdResponse
+    {
+        public GameStateResponse(int id, int state) : base(id, Status.STATUS_GAMEUPDATE, "")
+        {
+            this.type = (int)Status.STATUS_GAMEUPDATE;
+            this.state = state;
         }
     }
 }
